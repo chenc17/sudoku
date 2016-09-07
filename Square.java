@@ -1,3 +1,6 @@
+import java.util.HashSet;
+import java.util.Set;
+
 //Square Class
 //A square object is one box in a Sudoku grid
 //It has a column, row, 3x3 region, value, and square number
@@ -10,10 +13,11 @@ public class Square
 	private int region; //0 based
 	private int value; //1 to 9
 	private int square_no; //0 based (0 to 80)
+	private Set<Integer> possible_values; 
 	
 	public static final int INVALID_VAL = -1;
 	public static final int MAX_SUDOKU_VAL=9;
-	public static final int MIN_SUDOKU_VAL=1;
+	public static final int MIN_SUDOKU_VAL=0; //0 indicates a "blank" square
 	
 	
 	//default constructor 
@@ -115,6 +119,11 @@ public class Square
 	public int get_square_no()
 	{
 		return square_no;
+	}
+	
+	// remove a number from the set of potential numbers the square could be
+	public void remove_int(int value) {
+		this.possible_values.remove(value);
 	}
 	
 }
