@@ -1,0 +1,86 @@
+
+
+public class Square
+{
+	private int column;
+	private int row;
+	private int region;
+	private int value;
+	private int square_no;
+	
+	public static final int INVALID_VAL = -1;
+	public static final int MAX_SUDOKU_VAL=9;
+	public static final int MIN_SUDOKU_VAL=1;
+	
+	//default constructor
+	public Square()
+	{
+		// column=INVALID_VAL;
+		// row=INVALID_VAL;
+		// region=INVALID_VAL;
+		// value=INVALID_VAL;
+		// square_no=INVALID_VAL;
+	}
+	
+	//will convert array indices to be 1-based...
+	public Square(int row_index, int col_index, int val)
+	{
+		row_index+=1;
+		col_index+=1;
+		
+		if((row_index<=MAX_SUDOKU_VAL && row_index>=MIN_SUDOKU_VAL) &&
+			(col_index<=MAX_SUDOKU_VAL && col_index>=MIN_SUDOKU_VAL)&&
+			(val<=MAX_SUDOKU_VAL || val>=MIN_SUDOKU_VAL))
+		{
+			column=col_index;
+			row=row_index;
+			region=get_region_from_row_col(row_index, col_index);
+			value=val;
+			square_no=(MAX_SUDOKU_VAL*(row_index-1))+col_index;
+		}
+		else
+		{
+			//MORE HERE?
+			System.out.println("Invalid values for constructor parameters");
+		}
+		
+	}
+	
+	private int get_region_from_row_col(int row, int col)
+	{
+		int region=0;
+		int row_region=0;
+		int col_region=0;
+		
+		if(row>=1 && row<=3)
+		{
+			row_region=0;
+		}
+		if(row>=4 && row<=6)
+		{
+			row_region=1;
+		}
+		if(row>=7 && row<=9)
+		{
+			row_region=2;
+		}
+		
+		if(col>=1 && col<=3)
+		{
+			col_region=0;
+		}
+		if(col>=4 && col<=6)
+		{
+			col_region=1;
+		}
+		if(col>=7 && col<=9)
+		{
+			col_region=2;
+		}
+		
+		region=(3*row_region)+col_region;
+		return region;
+	}
+	
+	//getters??? Need to test out...
+}

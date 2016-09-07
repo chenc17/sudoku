@@ -1,0 +1,24 @@
+//Square class 
+//Each square has value, index within arraylist, region info, row info, and column info (1-9)
+
+//Make an arraylist of 81 squares
+//Create an arraylist of lists to keep track of what has/hasn't been tried for each square 
+//(fill with lists containing numbers 1-9)
+
+//Go square by square
+//Check to see if square still has any possibilities left
+//If not, reset the square and try again
+
+//If so, randomly pick one of the possibilities (pick a random index)
+
+//Check for a conflict
+//Pass the squares arraylist and a hypothetical square (need methods to get appropriate values)
+//with appropriate index and value
+//to the conflicts function
+
+//for every square, if in same region or row or column as hypothetical square, test values...
+//if same, CONFLICT!!! Remove the value from the square's list
+
+//If no conflict, add the hypothetical square to the squares array list and remove square value 
+//from that square's list
+
