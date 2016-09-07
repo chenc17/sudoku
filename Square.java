@@ -1,9 +1,3 @@
-
-//0-BASED ITEMS:
-//COLUMN IDX
-//ROW IDX
-//SQUARE NUMBER (SQUARES ARE NUMBERED 0 THROUGH 80)
-
 //Square Class
 //A square object is one box in a Sudoku grid
 //It has a column, row, 3x3 region, value, and square number
@@ -11,11 +5,11 @@
 //@date 9/6/2016
 public class Square
 {
-	private int column;
-	private int row;
-	private int region;
-	private int value;
-	private int square_no;
+	private int column; //0 based
+	private int row; //0 based
+	private int region; //0 based
+	private int value; //1 to 9
+	private int square_no; //0 based (0 to 80)
 	
 	public static final int INVALID_VAL = -1;
 	public static final int MAX_SUDOKU_VAL=9;
