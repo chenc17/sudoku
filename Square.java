@@ -13,49 +13,46 @@ public class Square
 	private int region; //0 based
 	private int value; //1 to 9
 	private int square_no; //0 based (0 to 80)
-	private Set<Integer> possible_values; 
-	
+	private Set<Integer> possible_values;
+
 	public static final int INVALID_VAL = -1;
 	public static final int MAX_SUDOKU_VAL=9;
 	public static final int MIN_SUDOKU_VAL=0; //0 indicates a "blank" square
-	
-	
-	//default constructor 
+	public static final int MAX_ROW_COL = 9;
+	public static final int MIN_ROW_COL = 1;
+
+
+	//default constructor
 	public Square()
 	{
 		this(INVALID_VAL, INVALID_VAL, INVALID_VAL);
 	}
-	
-	
+
+
 	public Square(int row_index, int col_index, int val)
 	{
-		//remember that row and col are 0-based
-		if((row_index<MAX_SUDOKU_VAL && row_index>=MIN_SUDOKU_VAL-1) &&
-			(col_index<MAX_SUDOKU_VAL && col_index>=MIN_SUDOKU_VAL-1)&&
-			(val<=MAX_SUDOKU_VAL && val>=MIN_SUDOKU_VAL))
-		{
-			column=col_index;
-			row=row_index;
-			region=get_region_from_row_col(row_index, col_index);
-			value=val;
-			square_no=(MAX_SUDOKU_VAL*(row_index))+col_index;
+		if( validate(row_index, col_index, val) ) {
+			this.column = col_index;
+			this.row = row_index;
+			this.region = get_region_from_row_col(row_index, col_index);
+			this.value = val;
+			this.square_no = (MAX_SUDOKU_VAL*(row_index)) + col_index;
 		}
 		else
 		{
-
-			System.out.println("Invalid values for constructor parameters!");
+			// System.out.println("Invalid values for constructor parameters!");
 			column=INVALID_VAL;
 			row=INVALID_VAL;
 			region=INVALID_VAL;
 			value=INVALID_VAL;
 			square_no=INVALID_VAL;
 		}
-		
+
 	}
-	
+
 	//there are 9 regions in a sudoku board
 	//0 | 1 | 2
-	//3 | 4 | 5 
+	//3 | 4 | 5
 	//6 | 7 | 8
 	//this method calculates a square's region based on its row and col
 	private int get_region_from_row_col(int row, int col)
@@ -63,7 +60,7 @@ public class Square
 		int region=0;
 		int row_region=0;
 		int col_region=0;
-		
+
 		if(row>=0 && row<=2)
 		{
 			row_region=0;
@@ -76,7 +73,7 @@ public class Square
 		{
 			row_region=2;
 		}
-		
+
 		if(col>=0 && col<=2)
 		{
 			col_region=0;
@@ -89,41 +86,52 @@ public class Square
 		{
 			col_region=2;
 		}
-		
+
 		region=(3*row_region)+col_region;
 		return region;
 	}
-	
+
 	//getters
 	public int get_column()
 	{
 		return column;
 	}
-	
+
 	public int get_row()
 	{
 		return row;
-		
+
 	}
-	
+
 	public int get_region()
 	{
 		return region;
 	}
-	
+
 	public int get_value()
 	{
 		return value;
 	}
-	
+
 	public int get_square_no()
 	{
 		return square_no;
 	}
-	
+
 	// remove a number from the set of potential numbers the square could be
 	public void remove_int(int value) {
 		this.possible_values.remove(value);
 	}
-	
+
+	public static boolean validate(int row_index, int col_index, int val) {
+		if((row_index<MAX_ROW_COL && row_index>=MIN_ROW_COL) &&
+			 (col_index<MAX_ROW_COL && col_index>=MIN_ROW_COL)&&
+			 (val<=MAX_SUDOKU_VAL && val>=MIN_SUDOKU_VAL))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 }
