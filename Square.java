@@ -19,6 +19,7 @@ public class Square
 
 	public static final int INVALID_VAL = -1;
 	public static final int MAX_SUDOKU_VAL=9;
+	public static final int UNKNOWN = 0;
 	public static final int MIN_SUDOKU_VAL=0; // 0 indicates a "blank" square
 	public static final int MAX_ROW_COL = 9;
 	public static final int MIN_ROW_COL = 1;
@@ -92,8 +93,9 @@ public class Square
 		return region;
 	}
 
+	// This method creates the set of possible values the square could be
 	protected static Set<Integer> getInitPossibleValues(int val) {
-		if(val == 0) {
+		if(val == UNKNOWN) {
 			return new HashSet<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
 		} else {
 			return Collections.emptySet();
