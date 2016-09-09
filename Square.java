@@ -1,5 +1,7 @@
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Arrays;
+import java.util.Collections;
 
 //Square Class
 //A square object is one box in a Sudoku grid
@@ -11,23 +13,21 @@ public class Square
 	private int column; //0 based
 	private int row; //0 based
 	private int region; //0 based
-	private int value; //1 to 9
+	private int value; //1 to 9, 0 if unknown
 	private int square_no; //0 based (0 to 80)
 	private Set<Integer> possible_values;
 
 	public static final int INVALID_VAL = -1;
 	public static final int MAX_SUDOKU_VAL=9;
-	public static final int MIN_SUDOKU_VAL=0; //0 indicates a "blank" square
+	public static final int MIN_SUDOKU_VAL=0; // 0 indicates a "blank" square
 	public static final int MAX_ROW_COL = 9;
 	public static final int MIN_ROW_COL = 1;
-
 
 	//default constructor
 	public Square()
 	{
 		this(INVALID_VAL, INVALID_VAL, INVALID_VAL);
 	}
-
 
 	public Square(int row_index, int col_index, int val)
 	{
@@ -41,19 +41,20 @@ public class Square
 		else
 		{
 			// System.out.println("Invalid values for constructor parameters!");
-			column=INVALID_VAL;
-			row=INVALID_VAL;
-			region=INVALID_VAL;
-			value=INVALID_VAL;
-			square_no=INVALID_VAL;
+			this.column=INVALID_VAL;
+			this.row=INVALID_VAL;
+			this.region=INVALID_VAL;
+			this.value=INVALID_VAL;
+			this.square_no=INVALID_VAL;
 		}
 
+		this.possible_values = getInitPossibleValues(val);
 	}
 
-	//there are 9 regions in a sudoku board
-	//0 | 1 | 2
-	//3 | 4 | 5
-	//6 | 7 | 8
+	// there are 9 regions in a sudoku board
+	// 0 | 1 | 2
+	// 3 | 4 | 5
+	// 6 | 7 | 8
 	//this method calculates a square's region based on its row and col
 	private int get_region_from_row_col(int row, int col)
 	{
@@ -91,6 +92,14 @@ public class Square
 		return region;
 	}
 
+	protected static Set<Integer> getInitPossibleValues(int val) {
+		if(val == 0) {
+			return new HashSet<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
+		} else {
+			return Collections.emptySet();
+		}
+	}
+
 	//getters
 	public int get_column()
 	{
@@ -121,6 +130,10 @@ public class Square
 	// remove a number from the set of potential numbers the square could be
 	public void remove_int(int value) {
 		this.possible_values.remove(value);
+	}
+
+	public Set<Integer> get_possible_values() {
+		return this.possible_values;
 	}
 
 	public static boolean validate(int row_index, int col_index, int val) {

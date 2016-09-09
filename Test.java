@@ -1,12 +1,19 @@
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.Collections;
+
 public class Test
 {
-	private static int TOO_BIG = 10;
-	private static int TOO_SMALL = -1;
-	private static int JUST_RIGHT = 1;
+	private static final int TOO_BIG = 10;
+	private static final int TOO_SMALL = -1;
+	private static final int JUST_RIGHT = 1;
 
 	public static void main(String[] args)
 	{
+			System.out.println("Tests for Square Class:");
 			validateHandlesAllValidParametersTest();
+
 			validateHandlesTooLargeRowTest();
 			validateHandlesTooBigColTest();
 			validateHandlesTooBigValTest();
@@ -14,6 +21,12 @@ public class Test
 			validateHandlesTooSmallRowTest();
 			validateHandlesTooSmallColTest();
 			validateHandlesTooSmallValTest();
+
+			initPossibleValuesHandlesInvalidValTest();
+			initPossibleValuesHandlesKnownValTest();
+			initPossibleValuesHandlesUnknownValTest();
+
+			System.out.println();
 	}
 
 	// *** add tests to ensure that the get region method works properly
@@ -60,6 +73,31 @@ public class Test
 		System.out.println("validateHandlesTooSmallValTest");
 		boolean result = Square.validate(JUST_RIGHT, JUST_RIGHT, TOO_SMALL);
 		assertEquals("Expected validate to return false", false, result);
+	}
+
+	/**
+	* The following tests that the initialization of the possible values set is
+	* working properly
+	**/
+	public static void initPossibleValuesHandlesInvalidValTest() {
+		System.out.println("initPossibleValuesHandlesInvalidValTest");
+		Set<Integer> actual = Square.getInitPossibleValues(-1);
+		Set<Integer> expected = Collections.emptySet();
+		assertEquals("Sets were not equal, expected empty but got " + actual, expected, actual);
+	}
+
+	public static void initPossibleValuesHandlesKnownValTest() {
+		System.out.println("initPossibleValuesHandlesKnownValTest");
+		Set<Integer> actual = Square.getInitPossibleValues(1);
+		Set<Integer> expected = Collections.emptySet();
+		assertEquals("Sets were not equal, expected empty but got " + actual, expected, actual);
+	}
+
+	public static void initPossibleValuesHandlesUnknownValTest() {
+		System.out.println("initPossibleValuesHandlesUnknownValTest");
+		Set<Integer> actual = Square.getInitPossibleValues(0);
+		Set<Integer> expected = new HashSet<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
+		assertEquals("Sets were not equal, expected empty but got " + actual, expected, actual);
 	}
 
 	// helper method to check that a square has all invalid values
