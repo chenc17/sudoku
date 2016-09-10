@@ -7,7 +7,7 @@ import java.util.Collections;
 //A square object is one box in a Sudoku grid
 //It has a column, row, 3x3 region, value, and square number
 //@authors Christine Chen and Matt Hino
-//@date 9/6/2016
+//@date 9/10/2016
 public class Square
 {
 	private int column; //0 based
@@ -148,6 +148,14 @@ public class Square
 		else
 		{
 			this.value = INVALID_VAL;
+		}
+	}
+
+	public void reset_possible_values()
+	{
+		for(int i=MIN_SUDOKU_VAL+1; i<=MAX_SUDOKU_VAL; i++)
+		{
+			this.possible_values.add(i);
 		}
 	}
 
