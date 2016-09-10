@@ -21,8 +21,8 @@ public class Square
 	public static final int MAX_SUDOKU_VAL=9;
 	public static final int UNKNOWN = 0;
 	public static final int MIN_SUDOKU_VAL=0; // 0 indicates a "blank" square
-	public static final int MAX_ROW_COL = 9;
-	public static final int MIN_ROW_COL = 1;
+	public static final int MAX_ROW_COL = 8;
+	public static final int MIN_ROW_COL = 0;
 
 	//default constructor
 	public Square()
@@ -123,6 +123,18 @@ public class Square
 	{
 		return value;
 	}
+	
+	public void set_value(int potential_value)
+	{
+		if(validate(this.row, this.column, potential_value)==true)
+		{
+			this.value = potential_value;
+		}
+		else
+		{
+			this.value = INVALID_VAL;
+		}
+	}
 
 	public int get_square_no()
 	{
@@ -139,8 +151,8 @@ public class Square
 	}
 
 	public static boolean validate(int row_index, int col_index, int val) {
-		if((row_index<MAX_ROW_COL && row_index>=MIN_ROW_COL) &&
-			 (col_index<MAX_ROW_COL && col_index>=MIN_ROW_COL)&&
+		if((row_index<=MAX_ROW_COL && row_index>=MIN_ROW_COL) &&
+			 (col_index<=MAX_ROW_COL && col_index>=MIN_ROW_COL)&&
 			 (val<=MAX_SUDOKU_VAL && val>=MIN_SUDOKU_VAL))
 		{
 			return true;

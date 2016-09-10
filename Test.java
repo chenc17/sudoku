@@ -7,7 +7,7 @@ public class Test
 {
 	private static final int TOO_BIG = 10;
 	private static final int TOO_SMALL = -1;
-	private static final int JUST_RIGHT = 1;
+	private static final int JUST_RIGHT = 0;
 
 	public static void main(String[] args)
 	{

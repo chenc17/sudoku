@@ -1,24 +1,36 @@
-//Square class 
+//Square class
 //Each square has value, index within arraylist, region info, row info, and column info (1-9)
 
-//Make an arraylist of 81 squares
-//Create an arraylist of lists to keep track of what has/hasn't been tried for each square 
-//(fill with lists containing numbers 1-9)
+//Make a 9x9 2D array of Square objects
+//Each Square will have a set containing all remaining possibilities for that Square
 
 //Go square by square
 //Check to see if square still has any possibilities left
-//If not, reset the square and try again
+//If not, reset the square and go to the previous square
 
 //If so, randomly pick one of the possibilities (pick a random index)
 
 //Check for a conflict
-//Pass the squares arraylist and a hypothetical square (need methods to get appropriate values)
+//Pass the hypothetical square
 //with appropriate index and value
 //to the conflicts function
 
 //for every square, if in same region or row or column as hypothetical square, test values...
-//if same, CONFLICT!!! Remove the value from the square's list
+//if same, CONFLICT!!!
+//Remove the value from the square's list
 
-//If no conflict, add the hypothetical square to the squares array list and remove square value 
+//If no conflict, add the hypothetical square to the squares array list
+//remove square value
 //from that square's list
 
+//At this stage the 2D array is a complete Sudoku puzzle. Now, Square values must be "erased"
+//from the 2D array to make the "unsolved" Sudoku puzzle.
+
+//To speed up the process, delete two or four diagonally opposite values until around 20 values
+//have been deleted...then two at a time until around 30 values left...then 1 at a time...
+
+//After every deletion, test with Solver
+//Fail->backtrack
+//OK->keep going
+
+//http://www.sudokuwiki.org/Sudoku_Creation_and_Grading.pdf
