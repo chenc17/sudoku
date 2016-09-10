@@ -17,27 +17,30 @@ public class Square
 	private int square_no; //0 based (0 to 80)
 	private Set<Integer> possible_values;
 
+
 	public static final int INVALID_VAL = -1;
+	public static final int NUM_SQUARES_ROW_COL = 9;
 	public static final int MAX_SUDOKU_VAL=9;
 	public static final int UNKNOWN = 0;
 	public static final int MIN_SUDOKU_VAL=0; // 0 indicates a "blank" square
 	public static final int MAX_ROW_COL = 8;
 	public static final int MIN_ROW_COL = 0;
+	public static final int NUM_SQUARES = (NUM_SQUARES_ROW_COL)*(NUM_SQUARES_ROW_COL);
 
 	//default constructor
 	public Square()
 	{
-		this(INVALID_VAL, INVALID_VAL, INVALID_VAL);
+		this(INVALID_VAL, INVALID_VAL);
 	}
 
-	public Square(int row_index, int col_index, int val)
+	public Square(int square_number, int val)
 	{
-		if( validate(row_index, col_index, val) ) {
-			this.column = col_index;
-			this.row = row_index;
-			this.region = get_region_from_row_col(row_index, col_index);
+		if(validate(square_number, val)) {
+			this.row = get_row_idx_init(square_number);
+			this.column = get_col_idx_init(this.row, square_number);
+			this.region = get_region_from_row_col(this.row, this.column);
 			this.value = val;
-			this.square_no = (MAX_SUDOKU_VAL*(row_index)) + col_index;
+			this.square_no = square_number;
 		}
 		else
 		{
@@ -50,6 +53,18 @@ public class Square
 		}
 
 		this.possible_values = getInitPossibleValues(val);
+	}
+
+	private int get_row_idx_init(int square_num)
+	{
+		int row_idx = square_num/(this.NUM_SQUARES_ROW_COL);
+		return row_idx;
+	}
+
+	private int get_col_idx_init(int row_idx, int square_num)
+	{
+		int col_idx=square_num-((this.NUM_SQUARES_ROW_COL)*row_idx);
+		return col_idx;
 	}
 
 	// there are 9 regions in a sudoku board
@@ -123,10 +138,10 @@ public class Square
 	{
 		return value;
 	}
-	
+
 	public void set_value(int potential_value)
 	{
-		if(validate(this.row, this.column, potential_value)==true)
+		if(validate(this.square_no, potential_value)==true)
 		{
 			this.value = potential_value;
 		}
@@ -150,9 +165,9 @@ public class Square
 		return this.possible_values;
 	}
 
-	public static boolean validate(int row_index, int col_index, int val) {
-		if((row_index<=MAX_ROW_COL && row_index>=MIN_ROW_COL) &&
-			 (col_index<=MAX_ROW_COL && col_index>=MIN_ROW_COL)&&
+	public static boolean validate(int square_num, int val) {
+		//square_num can be in the range 0 to 80
+		if((square_num<NUM_SQUARES) && (square_num>=MIN_ROW_COL) &&
 			 (val<=MAX_SUDOKU_VAL && val>=MIN_SUDOKU_VAL))
 		{
 			return true;
