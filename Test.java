@@ -5,21 +5,19 @@ import java.util.Collections;
 
 public class Test
 {
-	private static final int TOO_BIG = 10;
+	private static final int TOO_BIG = 81;
 	private static final int TOO_SMALL = -1;
-	private static final int JUST_RIGHT = 0;
+	private static final int VALID = 5;
 
 	public static void main(String[] args)
 	{
 			System.out.println("Tests for Square Class:");
 			validateHandlesAllValidParametersTest();
 
-			validateHandlesTooLargeRowTest();
-			validateHandlesTooBigColTest();
+			validateHandlesTooLargeSquareNumTest();
 			validateHandlesTooBigValTest();
 
-			validateHandlesTooSmallRowTest();
-			validateHandlesTooSmallColTest();
+			validateHandlesTooSmallSquareNumTest();
 			validateHandlesTooSmallValTest();
 
 			initPossibleValuesHandlesInvalidValTest();
@@ -39,39 +37,31 @@ public class Test
 	**/
 	public static void validateHandlesAllValidParametersTest() {
 		System.out.println("validateHandlesAllValidParametersTest");
-		boolean result = Square.validate(JUST_RIGHT, JUST_RIGHT, JUST_RIGHT);
+		boolean result = Square.validate(VALID, VALID);
 		assertEquals("Expected validate to return true", true, result);
 	}
 
-	public static void validateHandlesTooLargeRowTest() {
-		System.out.println("validateHandlesTooLargeRowTest");
-		boolean result = Square.validate(TOO_BIG, JUST_RIGHT, JUST_RIGHT);
-		assertEquals("Expected validate to return false", false, result);
-	}
-	public static void validateHandlesTooBigColTest() {
-		System.out.println("validateHandlesTooBigColTest");
-		boolean result = Square.validate(JUST_RIGHT, TOO_BIG, JUST_RIGHT);
-		assertEquals("Expected validate to return false", false, result);
-	}
-	public static void validateHandlesTooBigValTest() {
-		System.out.println("validateHandlesTooBigValTest");
-		boolean result = Square.validate(JUST_RIGHT, JUST_RIGHT, TOO_BIG);
+	public static void validateHandlesTooLargeSquareNumTest() {
+		System.out.println("validateHandlesTooLargeSquareNumTest");
+		boolean result = Square.validate(TOO_BIG, VALID);
 		assertEquals("Expected validate to return false", false, result);
 	}
 
-	public static void validateHandlesTooSmallRowTest() {
-		System.out.println("validateHandlesTooSmallRowTest");
-		boolean result = Square.validate(TOO_SMALL, JUST_RIGHT, JUST_RIGHT);
+	public static void validateHandlesTooBigValTest() {
+		System.out.println("validateHandlesTooBigValTest");
+		boolean result = Square.validate(VALID, TOO_BIG);
 		assertEquals("Expected validate to return false", false, result);
 	}
-	public static void validateHandlesTooSmallColTest() {
-		System.out.println("validateHandlesTooSmallColTest");
-		boolean result = Square.validate(JUST_RIGHT, TOO_SMALL, JUST_RIGHT);
+
+	public static void validateHandlesTooSmallSquareNumTest() {
+		System.out.println("validateHandlesTooSmallSquareNumTest");
+		boolean result = Square.validate(TOO_SMALL, VALID);
 		assertEquals("Expected validate to return false", false, result);
 	}
+
 	public static void validateHandlesTooSmallValTest() {
 		System.out.println("validateHandlesTooSmallValTest");
-		boolean result = Square.validate(JUST_RIGHT, JUST_RIGHT, TOO_SMALL);
+		boolean result = Square.validate(VALID, TOO_SMALL);
 		assertEquals("Expected validate to return false", false, result);
 	}
 
