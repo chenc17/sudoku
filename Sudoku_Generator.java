@@ -10,7 +10,7 @@ import java.io.FileOutputStream;
 //A Sudoku_Generator object contains the sudoku grid--an array of Square objects
 //It also has methods to create a solved sudoku grid (complete)
 //and a solvable sudoku grid (not started)
-//The method of most interest to those using this class is the 
+//The method of most interest to those using this class is the
 //get_sudoku_puzzle() method that will return a solvable sudoku grid (array of Square objects)
 //or null if there is some Error
 //NOTE: currently, get_sudoku_puzzle() returns a completely solved sudoku grid
@@ -154,7 +154,5 @@ public class Sudoku_Generator
 
     }
       return false;
-
-
   }
 }

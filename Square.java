@@ -2,13 +2,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Arrays;
 import java.util.Collections;
+import java.lang.Comparable;
 
 //Square Class
 //A square object is one box in a Sudoku grid
 //It has a column, row, 3x3 region, value, and square number
 //@authors Christine Chen and Matt Hino
 //@date 9/10/2016
-public class Square
+public class Square implements Comparable<Square>
 {
 	private int column; //0 based
 	private int row; //0 based
@@ -173,15 +174,24 @@ public class Square
 		return this.possible_values;
 	}
 
+	//square_num can be in the range 0 to 80 and values in set {0,...,9}
 	public static boolean validate(int square_num, int val) {
-		//square_num can be in the range 0 to 80
 		if((square_num<NUM_SQUARES) && (square_num>=MIN_ROW_COL) &&
-			 (val<=MAX_SUDOKU_VAL && val>=MIN_SUDOKU_VAL))
+			 (val>=MIN_SUDOKU_VAL && val<=MAX_SUDOKU_VAL))
 		{
 			return true;
 		}
 
 		return false;
+	}
+
+	// this method allows us to sort a list of squares by their square number
+	public int compareTo(Square otherSquare) {
+		return Integer.compare(this.square_no, otherSquare.get_square_no());
+	}
+
+	public String toString() {
+		return String.format("Square Num: %d, Row: %d, Col: %d, Region: %d, Val: %d", square_no, row, column, region, value);
 	}
 
 }
