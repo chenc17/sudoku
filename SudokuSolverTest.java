@@ -3,7 +3,7 @@ import java.util.*;
 public class SudokuSolverTest {
 
   // test puzzles obtained from: http://www.extremesudoku.info/sudoku.html
-  private static int[] superHardPuzzle  = {0,0,4, 3,0,0, 0,0,5,
+  private static int[] kindaHardPuzzle  = {0,0,4, 3,0,0, 0,0,5,
                                            0,8,0, 0,7,0, 0,4,0,
                                            6,0,1, 0,4,0, 2,0,0,
 
@@ -14,24 +14,25 @@ public class SudokuSolverTest {
                                            0,0,3, 0,2,0, 5,0,8,
                                            0,2,0, 0,8,0, 0,7,0,
                                            8,0,0, 0,0,3, 6,0,0 };
+                                           
+   // http://www.telegraph.co.uk/news/science/science-news/9359579/Worlds-hardest-sudoku-can-you-crack-it.html
+  private static int[] ridiculousPuzzle = {8,0,0, 0,0,0, 0,0,0,
+                                           0,0,3, 6,0,0, 0,0,0,
+                                           0,7,0, 0,9,0, 2,0,0,
 
-   private static int[] easyPuzzle      = {4,0,0, 0,0,0, 0,7,3,
-                                          8,0,9, 0,7,0, 0,2,0,
-                                          0,0,7, 2,5,0, 4,0,0,
+                                           0,5,0, 0,0,7, 0,0,0,
+                                           0,0,0, 0,4,5, 7,0,0,
+                                           0,0,0, 1,0,0, 0,3,0,
 
-                                          9,7,8, 0,6,0, 0,0,4,
-                                          0,5,8, 0,2,0, 0,9,0,
-                                          1,0,0, 0,3,0, 8,5,7,
-
-                                          0,0,3, 0,9,6, 7,0,8,
-                                          0,8,0, 0,1,0, 3,0,9,
-                                          2,9,0, 0,0,0, 0,0,8 };
+                                           0,0,1, 0,0,0, 0,6,8,
+                                           0,0,8, 5,0,0, 0,1,0,
+                                           0,9,0, 0,0,0, 4,0,0 };
 
 
   public static void main(String [] args) {
     System.out.println("Tests for SudokuSolver:");
-
-    solvePuzzleTimed(convertArrayToSquareArray(easyPuzzle));
+    solvePuzzleTimed(convertArrayToSquareArray(kindaHardPuzzle));
+    solvePuzzleTimed(convertArrayToSquareArray(ridiculousPuzzle));
   }
 
   public static void solvePuzzleTimed(Square[] puzzle) {
@@ -43,7 +44,7 @@ public class SudokuSolverTest {
     if(solved.isPresent()) {
       print_sudoku_puzzle(solved.get());
     }
-    System.out.println("Solving took " + ((endTime - startTime)/1000) + " seconds");
+    System.out.println("Solving took " + (endTime - startTime) + " milliseconds\n");
   }
 
   public static Square[] convertArrayToSquareArray(int[] grid) {

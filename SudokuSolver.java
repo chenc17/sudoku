@@ -11,7 +11,7 @@ public class SudokuSolver {
     // empty constructor
   }
 
-  // Return a container that holds a solved puzzle or is empty if not solvable
+  // Return a container that holds a solved puzzle or empty if not solvable
   public Optional<Square[]> solve_puzzle(Square[] unsolvedPuzzle) {
     // first ensure that the Square[] is of correct size
     if(!validate(unsolvedPuzzle)) {
@@ -36,25 +36,27 @@ public class SudokuSolver {
     return solvedPuzzle;
   }
 
+
   private Optional<Square[]> backtracking_solver(Square[] puzzle) {
+    // get the next square that hasn't been filled in yet
     Optional<Square> firstUnknown = get_first_unknown(puzzle);
 
-    // if there are no unknown squares, we've solved the puzzle :)
+    // Base Case: if there are no unknown squares, we've solved the puzzle :)
     if(!firstUnknown.isPresent()) {
       return Optional.of(puzzle);
     }
 
-    // get & loop through possible values of the unknown
-    Set<Integer> possibleValues = firstUnknown.get().get_possible_values();
+    // Now try and loop through all possible values for the unknown square
+    Square unknown = firstUnknown.get();
 
-    for(int val=1; val<=Square.MAX_SUDOKU_VAL; val++) {
-      if(!has_conflict(puzzle, firstUnknown.get().get_square_no(), val)) {
+    // get & loop through possible values of the unknown
+    Set<Integer> possibleValues = unknown.get_possible_values();
+    int square_no = unknown.get_square_no();
+
+    for(Integer val: possibleValues) {
+      if(!has_conflict(puzzle, square_no, val)) {
           // assign possible value to that square, and recurse
-          int square_no = firstUnknown.get().get_square_no();
-          Square newSquare = new Square(square_no, val);
-          Square oldSquare = puzzle[square_no];
-          System.out.println(newSquare);
-          puzzle[square_no] = newSquare;
+          puzzle[square_no].set_value(val);
 
           // RECURSIVE CASE: if solver returns a solved puzzle, return the puzzle
           Optional<Square[]> solvedPuzzle = backtracking_solver(puzzle);
@@ -62,16 +64,17 @@ public class SudokuSolver {
             return solvedPuzzle;
           }
 
-          // No solved puzzle found, try again.
-          puzzle[square_no] = oldSquare;
+          puzzle[square_no].set_value(Square.UNKNOWN);
       }
+
     }
     return Optional.empty();
   }
 
   // return the first
   private Optional<Square> get_first_unknown(Square[] puzzle) {
-    // first sort the array of squares by square number
+    // sort the puzzle to make sure that we are looking in increasing
+    // order.
     Arrays.sort(puzzle);
 
     // now look for the first Square of unkown value.
@@ -90,26 +93,21 @@ public class SudokuSolver {
                  .collect(Collectors.toSet());
   }
 
-  // see if we can change 'test_square's value to 'value' with the existing 'puzzle'
-  // return true if there is no conflict, false otherwise
-  private boolean has_conflict(Square[] puzzle, int test_square_no, int value) {
-    for(int sq_num=0; sq_num<puzzle.length && sq_num!=test_square_no; sq_num++) {
-      //for every square, if in same region or row or column as test_square, test values...
-      //if values are the same, CONFLICT!!!
-      if(puzzle[sq_num].get_row()==puzzle[test_square_no].get_row() ||
-         puzzle[sq_num].get_column()==puzzle[test_square_no].get_column() ||
-         puzzle[sq_num].get_region()==puzzle[test_square_no].get_region())
-      {
-        if(puzzle[sq_num].get_value()==value)
-        {
-          //CONFLICT!!
-          return true;
-        }
-      }
-
+  private boolean has_conflict(Square[] puzzle, int square_no, int new_value) {
+    Square oldSquare = puzzle[square_no];
+    for(int i=0; i<puzzle.length; i++){
+      if(puzzle[i].get_column() == oldSquare.get_column() ||
+         puzzle[i].get_row() == oldSquare.get_row() ||
+         puzzle[i].get_region() == oldSquare.get_region()) {
+           if(puzzle[i].get_value() == new_value) {
+             return true; // conflict
+           }
+         }
     }
-      return false;
+
+    return false;
   }
+
 
   // make sure that the puzzle has the appropriate size and each square
   // contains valid values. returns true if valid.
@@ -121,6 +119,16 @@ public class SudokuSolver {
     for(Square square: puzzle) {
       if(!square.validate(square.get_square_no(), square.get_value())) {
         return false;
+      }
+    }
+    return true;
+  }
+
+  // this method checks the entire board to ensure that the solution is correct
+  private boolean isValidSolution(Square[] puzzle) {
+    for(int i=0; i < puzzle.length; i++) {
+      if(has_conflict(puzzle, i, puzzle[i].get_value())){
+        return false; // not a valid solution!
       }
     }
     return true;
