@@ -223,7 +223,7 @@ public class Sudoku_Generator
       for(int i=0; i<num_squares_selected; i++)
       {
         sudoku_grid[square_candidates_num[i]].set_value(Square.UNKNOWN);
-
+        sudoku_grid[square_candidates_num[i]].reset_possible_values();
       }
 
       System.out.println("CANDIDATE!");
@@ -242,6 +242,7 @@ public class Sudoku_Generator
         for(int i=0; i<num_squares_selected; i++)
         {
           sudoku_grid[square_candidates_num[i]].set_value(square_candidates_val[i]);
+          sudoku_grid[square_candidates_num[i]].reset_possible_values();
         }
 
         if(num_empty_squares>STAGE_3_SQ_REM)

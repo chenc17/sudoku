@@ -15,6 +15,7 @@ public class SudokuSolver {
   public Optional<Square[]> solve_puzzle(Square[] unsolvedPuzzle) {
     // first ensure that the Square[] is of correct size
     if(!validate(unsolvedPuzzle)) {
+      System.out.println("Puzzle not of approriate size");
       return Optional.empty();
     }
 
