@@ -1,8 +1,5 @@
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.IntStream;
 import java.io.FileOutputStream;
 
 
@@ -23,6 +20,12 @@ public class Sudoku_Generator
   //create an array of 81 Square objects
 
   private Square[] sudoku_grid;
+  public static final int REMOVE_SQ_STAGE_1=4;
+  public static final int STAGE_2_SQ_REM=20;
+  public static final int REMOVE_SQ_STAGE_2=2;
+  public static final int STAGE_3_SQ_REM=40;
+  public static final int REMOVE_SQ_STAGE_3=1;
+  public static final int HARD_STOP_SQ_REM=50;
 
   public Sudoku_Generator()
   {
@@ -46,15 +49,16 @@ public class Sudoku_Generator
   {
     //welcome message
     Sudoku_Generator generator = new Sudoku_Generator();
-    Square[] puzzle = generator.get_sudoku_puzzle();
-    if(puzzle==null)
+
+    Optional<Square[]> puzzle =  generator.get_sudoku_puzzle();
+    if(puzzle.isPresent())
     {
-      System.out.println("Error in getting sudoku puzzle. Exiting!\n");
-      System.exit(0);
+      generator.print_sudoku_puzzle();
     }
     else
     {
-      generator.print_sudoku_puzzle();
+      System.out.println("Error in getting sudoku puzzle. Exiting!\n");
+      System.exit(0);
     }
   }
 
@@ -74,16 +78,17 @@ public class Sudoku_Generator
   }
 
 
-  public Square[] get_sudoku_puzzle()
+  public Optional<Square[]> get_sudoku_puzzle()
   {
     boolean created_sp_success=create_solved_puzzle();
     if(created_sp_success==true)
     {
-      return sudoku_grid;
+      create_unsolved_puzzle();
+      return Optional.of(sudoku_grid);
     }
     else
     {
-      return null;
+      return Optional.empty();
     }
   }
 
@@ -100,7 +105,7 @@ public class Sudoku_Generator
       {
           //randomly choose a value from square_poss_vals (SEEMS A LITTLE IFFY)
           Object[] poss_vals_arr=poss_vals_set.toArray();
-          int rand_val=(int)poss_vals_arr[new Random().nextInt(poss_vals_arr.length)];
+          int rand_val=(int)poss_vals_arr[get_random_idx(poss_vals_arr)];
           //System.out.println(rand_val);
 
           //check to see if setting rand_val as sudoku_grid[sq_num]'s value
@@ -134,6 +139,172 @@ public class Sudoku_Generator
     return true;
 
   }
+
+  private int get_random_idx(Object[] array)
+  {
+    return new Random().nextInt(array.length);
+  }
+
+  //assumes sudoku_grid has gone through the create_solved_puzzle() treatment
+  private void create_unsolved_puzzle()
+  {
+
+    int num_empty_squares=0;
+    //keeps track of how many squares should be "cleared" at at time
+    int num_squares_to_clear=0;
+
+    //these two arrays keep track of the square number and corresponding value of
+    //squares that are candidates for "clearing"
+    //there can only be at most REMOVE_SQ_STAGE_1 candidates squares at a time
+    int [] square_candidates_num=new int[REMOVE_SQ_STAGE_1];
+    int [] square_candidates_val=new int[REMOVE_SQ_STAGE_1];
+
+    //get a solver to use in determining that sudoku grid is still solvable after "clearing" squares
+    SudokuSolver solver = new SudokuSolver();
+
+    //fills squares set with the square numbers that correspond to squares that still have a value
+    Set<Integer> squares = init_squares();
+
+    while(num_empty_squares<=HARD_STOP_SQ_REM)
+    {
+
+      //make sure the arrays are reset
+      for(int i=0; i<4; i++)
+      {
+        square_candidates_num[i]=-1;
+        square_candidates_val[i]=-1;
+      }
+
+
+      //the number of squares to "clear" each time
+      //depends on the number of currently "cleared" squares
+      if(num_empty_squares<=STAGE_2_SQ_REM)
+      {
+        System.out.println("\nIn STAGE 1\n");
+        num_squares_to_clear=REMOVE_SQ_STAGE_1;
+      }
+      else if (num_empty_squares<=STAGE_3_SQ_REM)
+      {
+        System.out.println("\nIn STAGE 2\n");
+        num_squares_to_clear=REMOVE_SQ_STAGE_2;
+      }
+      else
+      {
+        System.out.println("\nIn STAGE 3\n");
+        num_squares_to_clear=REMOVE_SQ_STAGE_3;
+      }
+
+
+      //keeps track of how many squares have been selected as candidates
+      int num_squares_selected=0;
+      while(num_squares_selected<num_squares_to_clear)
+      {
+          //get a random square candidate
+          Object[] squares_arr=squares.toArray();
+          int square_no=(int)squares_arr[get_random_idx(squares_arr)];
+          //make sure this square hasn't already been chosen as a candidate
+          if(IntStream.of(square_candidates_num).anyMatch(x->x==square_no))
+          {
+            continue;
+          }
+          else
+          {
+            square_candidates_num[num_squares_selected]=square_no;
+            square_candidates_val[num_squares_selected]=sudoku_grid[square_no].get_value();
+            num_squares_selected++;
+          }
+
+
+      }
+
+
+
+      //try removing the values for the squares in square_candidates_num and try solving
+      for(int i=0; i<num_squares_selected; i++)
+      {
+        sudoku_grid[square_candidates_num[i]].set_value(Square.UNKNOWN);
+
+      }
+
+      System.out.println("CANDIDATE!");
+      print_sudoku_puzzle();
+      System.out.println();
+
+      Optional<Square[]> solved=solver.solve_puzzle(sudoku_grid);
+      System.out.println("After Attempted Solve!");
+      print_sudoku_puzzle();
+      System.out.println();
+
+      if(!(solved.isPresent()))
+      {
+        //PUZZLE IS UNSOLVABLE
+        //backtrack and try again
+        for(int i=0; i<num_squares_selected; i++)
+        {
+          sudoku_grid[square_candidates_num[i]].set_value(square_candidates_val[i]);
+        }
+
+        if(num_empty_squares>STAGE_3_SQ_REM)
+        {
+          //if we're already in stage 3, just stop
+          break;
+        }
+        else
+        {
+          System.out.println("---------------------------------------------");
+          continue;
+        }
+
+      }
+      else
+      {
+        //the puzzle is solvable
+        //update num_empty_squares
+        num_empty_squares=num_empty_squares+num_squares_selected;
+
+        //remove the appropriate squares from the squares set
+        for(int i=0; i<num_squares_selected; i++)
+        {
+          squares.remove(square_candidates_num[i]);
+        }
+
+        //since the solver solved the puzzle, need to reinstate the blanks for the next Round
+        for(int i=0; i<Square.NUM_SQUARES; i++)
+        {
+          if (!squares.contains(i))
+          {
+            sudoku_grid[i].set_value(Square.UNKNOWN);
+          }
+        }
+
+        System.out.println("Round Completed!");
+        print_sudoku_puzzle();
+        System.out.println();
+        System.out.println("---------------------------------------------");
+
+      }
+
+
+
+    }
+
+  }
+
+
+  private Set<Integer> init_squares()
+  {
+    Set<Integer> square_nums = new HashSet<Integer>();
+
+    for(int i=0; i<Square.NUM_SQUARES; i++)
+    {
+      square_nums.add(i);
+    }
+
+    return square_nums;
+
+
+  }
+
 
   private boolean check_for_conflict(int test_square)
   {
