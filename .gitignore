@@ -1,2 +1,4 @@
 *.class
 *.class~
+*_solved.txt
+*_output.txt
