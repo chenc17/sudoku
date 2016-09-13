@@ -1,6 +1,8 @@
 import java.util.*;
 import java.util.stream.IntStream;
 import java.io.FileOutputStream;
+import java.lang.Enum;
+import java.lang.Class;
 
 
 //Sudoku_Generator Class
@@ -25,7 +27,20 @@ public class Sudoku_Generator
   public static final int REMOVE_SQ_STAGE_2=2;
   public static final int STAGE_3_SQ_REM=40;
   public static final int REMOVE_SQ_STAGE_3=1;
-  public static final int HARD_STOP_SQ_REM=50;
+
+
+  //game "levels"
+  public enum Level
+  {
+    EASY, MEDIUM, DIFFICULT, RANDOM
+  }
+
+  public static final int HARD_STOP_SQ_REM_EASY=41; //40 left
+  public static final int HARD_STOP_SQ_REM_MED=51; //30 left
+  public static final int HARD_STOP_SQ_REM_DIFF=61; //20 left
+
+
+
 
   public Sudoku_Generator()
   {
@@ -50,7 +65,7 @@ public class Sudoku_Generator
     //welcome message
     Sudoku_Generator generator = new Sudoku_Generator();
 
-    Optional<Square[]> puzzle =  generator.get_sudoku_puzzle();
+    Optional<Square[]> puzzle =  generator.get_sudoku_puzzle(Level.RANDOM);
     if(puzzle.isPresent())
     {
       generator.print_sudoku_puzzle();
@@ -78,12 +93,12 @@ public class Sudoku_Generator
   }
 
 
-  public Optional<Square[]> get_sudoku_puzzle()
+  public Optional<Square[]> get_sudoku_puzzle(Level level_diff)
   {
     boolean created_sp_success=create_solved_puzzle();
     if(created_sp_success==true)
     {
-      create_unsolved_puzzle();
+      create_unsolved_puzzle(level_diff);
       return Optional.of(sudoku_grid);
     }
     else
@@ -146,8 +161,49 @@ public class Sudoku_Generator
   }
 
   //assumes sudoku_grid has gone through the create_solved_puzzle() treatment
-  private void create_unsolved_puzzle()
+  private void create_unsolved_puzzle(Level difficulty)
   {
+    int stop_at_num_empty_squares=0;
+
+    while(difficulty!=Level.EASY && difficulty!=Level.MEDIUM && difficulty!=Level.DIFFICULT)
+    {
+      int difficulty_val=new Random().nextInt(3);
+      if(difficulty_val==0)
+      {
+        difficulty=Level.EASY;
+      }
+      else if(difficulty_val==1)
+      {
+        difficulty=Level.MEDIUM;
+      }
+      else if(difficulty_val==2)
+      {
+        difficulty=Level.DIFFICULT;
+      }
+    }
+    switch(difficulty)
+    {
+      case EASY:
+        System.out.println("EASY PUZZLE\n");
+        stop_at_num_empty_squares=HARD_STOP_SQ_REM_EASY;
+        break;
+
+      case MEDIUM:
+        System.out.println("MEDIUM PUZZLE\n");
+        stop_at_num_empty_squares=HARD_STOP_SQ_REM_MED;
+        break;
+
+      case DIFFICULT:
+        System.out.println("DIFFICULT PUZZLE\n");
+        stop_at_num_empty_squares=HARD_STOP_SQ_REM_DIFF;
+        break;
+
+      default:
+        System.out.println("DEFAULT: EASY PUZZLE\n");
+        stop_at_num_empty_squares=HARD_STOP_SQ_REM_EASY;
+
+    }
+
 
     int num_empty_squares=0;
     //keeps track of how many squares should be "cleared" at at time
@@ -165,7 +221,7 @@ public class Sudoku_Generator
     //fills squares set with the square numbers that correspond to squares that still have a value
     Set<Integer> squares = init_squares();
 
-    while(num_empty_squares<=HARD_STOP_SQ_REM)
+    while(num_empty_squares<stop_at_num_empty_squares)
     {
 
       //make sure the arrays are reset
@@ -178,12 +234,12 @@ public class Sudoku_Generator
 
       //the number of squares to "clear" each time
       //depends on the number of currently "cleared" squares
-      if(num_empty_squares<=STAGE_2_SQ_REM)
+      if(num_empty_squares<STAGE_2_SQ_REM)
       {
         System.out.println("\nIn STAGE 1\n");
         num_squares_to_clear=REMOVE_SQ_STAGE_1;
       }
-      else if (num_empty_squares<=STAGE_3_SQ_REM)
+      else if (num_empty_squares<STAGE_3_SQ_REM)
       {
         System.out.println("\nIn STAGE 2\n");
         num_squares_to_clear=REMOVE_SQ_STAGE_2;
@@ -275,6 +331,7 @@ public class Sudoku_Generator
           if (!squares.contains(i))
           {
             sudoku_grid[i].set_value(Square.UNKNOWN);
+            //RESET POSSIBLE VALUES...
           }
         }
 
@@ -288,6 +345,8 @@ public class Sudoku_Generator
 
 
     }
+
+    System.out.println ("NUMBER OF SQUARES REMOVED " + num_empty_squares + "\n");
 
   }
 
