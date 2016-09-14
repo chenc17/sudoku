@@ -1,6 +1,17 @@
 import java.io.*;
 import java.util.*;
 
+
+
+//SudokuParser Class
+//Contains two public methods:
+//1) writeSudoku: takes a sudoku puzzle as an array of Squares and prints the puzzle to a
+//specified file
+//2) parseSudoku: takes a file containing a sudoku puzzle and converts the contents into an array
+//of Squares
+
+//@authors Matt Hino and Christine Chen
+//@date 9/13/2016
 public class SudokuParser {
 
   private static final String LINE_SEPARATOR = "+=======================+";

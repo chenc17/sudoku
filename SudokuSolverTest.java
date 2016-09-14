@@ -1,6 +1,12 @@
 import java.util.*;
 import java.io.*;
 
+//SudokuSolverTest
+//Tests the solve_puzzle() method in the SudokuSolver with
+//a couple different puzzles of varying difficulty
+//Also tests parseSudoku() and writeSudoku() methods from SudokuParser class
+//@authors Matt Hino and Christine Chen
+//@date 9/13/2016
 public class SudokuSolverTest {
 
   // test puzzles obtained from: http://www.extremesudoku.info/sudoku.html

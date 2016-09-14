@@ -3,6 +3,13 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.Collections;
 
+//Test
+//This class mainly contains tests that verify
+//the the robustness and accuracy of the Square class
+//setter methods 
+
+//@authors Matt Hino and Christine Chen
+//@date 9/13/2016
 public class Test
 {
 	private static final int TOO_BIG = 81;
