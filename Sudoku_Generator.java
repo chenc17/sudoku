@@ -7,27 +7,25 @@ import java.lang.Class;
 
 //Sudoku_Generator Class
 //A Sudoku_Generator object contains the sudoku grid--an array of Square objects
-//It also has methods to create a solved sudoku grid (complete)
-//and a solvable sudoku grid (not started)
+//It also has methods to create a solved sudoku grid
+//and an unsolved sudoku grid
 //The method of most interest to those using this class is the
-//get_sudoku_puzzle() method that will return a solvable sudoku grid (array of Square objects)
-//or null if there is some Error
-//NOTE: currently, get_sudoku_puzzle() returns a completely solved sudoku grid
-//or null
+//get_sudoku_puzzle() method that will return an unsolved sudoku grid (array of Square objects)
 
 //@authors Christine Chen and Matt Hino
-//@date 9/10/2016
+//@date 9/13/2016
 public class Sudoku_Generator
 {
-  //create an array of 81 Square objects
+
 
   private Square[] sudoku_grid;
-  public static final int REMOVE_SQ_STAGE_1=4;
-  public static final int STAGE_2_SQ_REM=20;
+
+  //these constants help with removing squares from a solved sudoku
+  public static final int REMOVE_SQ_STAGE_1=4; //remove 4 squares at a time in the first stage
+  public static final int STAGE_2_SQ_REM=20; //start the second stage after 20 squares have been removed
   public static final int REMOVE_SQ_STAGE_2=2;
   public static final int STAGE_3_SQ_REM=40;
   public static final int REMOVE_SQ_STAGE_3=1;
-
 
   //game "levels"
   public enum Level
@@ -35,6 +33,7 @@ public class Sudoku_Generator
     EASY, MEDIUM, DIFFICULT, RANDOM
   }
 
+  //how many squares should be removed for each difficulty level
   public static final int HARD_STOP_SQ_REM_EASY=41; //40 left
   public static final int HARD_STOP_SQ_REM_MED=51; //30 left
   public static final int HARD_STOP_SQ_REM_DIFF=61; //20 left
@@ -49,7 +48,7 @@ public class Sudoku_Generator
     //populate sudoku_grid with "blank" Square objects
     for(int idx=0; idx<sudoku_grid.length; idx++)
     {
-        sudoku_grid[idx]=new Square(idx, Square.MIN_SUDOKU_VAL);
+        sudoku_grid[idx]=new Square(idx, Square.UNKNOWN);
 
         //make sure the declaration is valid
         if(sudoku_grid[idx].get_column()==Square.INVALID_VAL)
@@ -62,10 +61,10 @@ public class Sudoku_Generator
 
   public static void main(String[] args)
   {
-    //welcome message
+
     Sudoku_Generator generator = new Sudoku_Generator();
 
-    Optional<Square[]> puzzle =  generator.get_sudoku_puzzle(Level.RANDOM);
+    Optional<Square[]> puzzle = generator.get_sudoku_puzzle(Level.RANDOM);
     if(puzzle.isPresent())
     {
       generator.print_sudoku_puzzle();
@@ -92,14 +91,33 @@ public class Sudoku_Generator
     System.out.println();
   }
 
+  public void refresh_sudoku_grid()
+  {
+    //set the value of each square to UNKNOWN and refresh the potential values for the square
+    for(int i=0; i<sudoku_grid.length; i++)
+    {
+      sudoku_grid[i].set_value(Square.UNKNOWN);
+      sudoku_grid[i].reset_possible_values();
+    }
+  }
 
   public Optional<Square[]> get_sudoku_puzzle(Level level_diff)
   {
     boolean created_sp_success=create_solved_puzzle();
     if(created_sp_success==true)
     {
-      create_unsolved_puzzle(level_diff);
-      return Optional.of(sudoku_grid);
+
+      if(check_valid_solved_sudoku_grid())
+      {
+        create_unsolved_puzzle(level_diff);
+        return Optional.of(sudoku_grid);
+      }
+      else
+      {
+        return Optional.empty();
+      }
+
+
     }
     else
     {
@@ -165,7 +183,9 @@ public class Sudoku_Generator
   {
     int stop_at_num_empty_squares=0;
 
-    while(difficulty!=Level.EASY && difficulty!=Level.MEDIUM && difficulty!=Level.DIFFICULT)
+    //if the difficulty is RANDOM or any other value other than those listed in the enum,
+    //assign a difficulty level here
+    if(difficulty!=Level.EASY && difficulty!=Level.MEDIUM && difficulty!=Level.DIFFICULT)
     {
       int difficulty_val=new Random().nextInt(3);
       if(difficulty_val==0)
@@ -184,34 +204,34 @@ public class Sudoku_Generator
     switch(difficulty)
     {
       case EASY:
-        System.out.println("EASY PUZZLE\n");
+        //System.out.println("EASY PUZZLE\n");
         stop_at_num_empty_squares=HARD_STOP_SQ_REM_EASY;
         break;
 
       case MEDIUM:
-        System.out.println("MEDIUM PUZZLE\n");
+        //System.out.println("MEDIUM PUZZLE\n");
         stop_at_num_empty_squares=HARD_STOP_SQ_REM_MED;
         break;
 
       case DIFFICULT:
-        System.out.println("DIFFICULT PUZZLE\n");
+        //System.out.println("DIFFICULT PUZZLE\n");
         stop_at_num_empty_squares=HARD_STOP_SQ_REM_DIFF;
         break;
 
       default:
-        System.out.println("DEFAULT: EASY PUZZLE\n");
+        //System.out.println("DEFAULT: EASY PUZZLE\n");
         stop_at_num_empty_squares=HARD_STOP_SQ_REM_EASY;
 
     }
 
 
     int num_empty_squares=0;
-    //keeps track of how many squares should be "cleared" at at time
+    //keeps track of how many squares should be "cleared" at a time (i.e. 4, 2, or 1)
     int num_squares_to_clear=0;
 
     //these two arrays keep track of the square number and corresponding value of
     //squares that are candidates for "clearing"
-    //there can only be at most REMOVE_SQ_STAGE_1 candidates squares at a time
+    //there can only be at most REMOVE_SQ_STAGE_1 candidate squares at a time
     int [] square_candidates_num=new int[REMOVE_SQ_STAGE_1];
     int [] square_candidates_val=new int[REMOVE_SQ_STAGE_1];
 
@@ -232,21 +252,21 @@ public class Sudoku_Generator
       }
 
 
-      //the number of squares to "clear" each time
+      //the number of squares to attempt to "clear" each time
       //depends on the number of currently "cleared" squares
       if(num_empty_squares<STAGE_2_SQ_REM)
       {
-        System.out.println("\nIn STAGE 1\n");
+        //System.out.println("\nIn STAGE 1\n");
         num_squares_to_clear=REMOVE_SQ_STAGE_1;
       }
       else if (num_empty_squares<STAGE_3_SQ_REM)
       {
-        System.out.println("\nIn STAGE 2\n");
+        //System.out.println("\nIn STAGE 2\n");
         num_squares_to_clear=REMOVE_SQ_STAGE_2;
       }
       else
       {
-        System.out.println("\nIn STAGE 3\n");
+        //System.out.println("\nIn STAGE 3\n");
         num_squares_to_clear=REMOVE_SQ_STAGE_3;
       }
 
@@ -265,6 +285,7 @@ public class Sudoku_Generator
           }
           else
           {
+            //enter the square and its value into the appropriate arrays
             square_candidates_num[num_squares_selected]=square_no;
             square_candidates_val[num_squares_selected]=sudoku_grid[square_no].get_value();
             num_squares_selected++;
@@ -282,14 +303,14 @@ public class Sudoku_Generator
         sudoku_grid[square_candidates_num[i]].reset_possible_values();
       }
 
-      System.out.println("CANDIDATE!");
-      print_sudoku_puzzle();
-      System.out.println();
+      //System.out.println("CANDIDATE!");
+      //print_sudoku_puzzle();
+      //System.out.println();
 
       Optional<Square[]> solved=solver.solve_puzzle(sudoku_grid);
-      System.out.println("After Attempted Solve!");
-      print_sudoku_puzzle();
-      System.out.println();
+      //System.out.println("After Attempted Solve!");
+      //print_sudoku_puzzle();
+      //System.out.println();
 
       if(!(solved.isPresent()))
       {
@@ -308,7 +329,7 @@ public class Sudoku_Generator
         }
         else
         {
-          System.out.println("---------------------------------------------");
+          //System.out.println("---------------------------------------------");
           continue;
         }
 
@@ -331,14 +352,14 @@ public class Sudoku_Generator
           if (!squares.contains(i))
           {
             sudoku_grid[i].set_value(Square.UNKNOWN);
-            //RESET POSSIBLE VALUES...
+            //RESET POSSIBLE VALUES???
           }
         }
 
-        System.out.println("Round Completed!");
-        print_sudoku_puzzle();
-        System.out.println();
-        System.out.println("---------------------------------------------");
+        //System.out.println("Round Completed!");
+        //print_sudoku_puzzle();
+        //System.out.println();
+        //System.out.println("---------------------------------------------");
 
       }
 
@@ -346,7 +367,7 @@ public class Sudoku_Generator
 
     }
 
-    System.out.println ("NUMBER OF SQUARES REMOVED " + num_empty_squares + "\n");
+    //System.out.println ("NUMBER OF SQUARES REMOVED " + num_empty_squares + "\n");
 
   }
 
@@ -385,5 +406,27 @@ public class Sudoku_Generator
 
     }
       return false;
+  }
+
+  //called after create_solved_puzzle()
+  public boolean check_valid_solved_sudoku_grid()
+  {
+
+    boolean conflict=false;
+    for(int i=0; i<sudoku_grid.length && conflict!=false; i++)
+    {
+
+      conflict=check_for_conflict(i);
+
+    }
+
+    if(conflict==false)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 }
