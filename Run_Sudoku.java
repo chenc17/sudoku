@@ -3,16 +3,28 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
+//Run_Sudoku
+//This is the class that a user runs in order to generate or solve
+//Sudoku puzzles
+
+//@authors Matt Hino and Christine Chen
+//@date 9/14/2016
+
 public class Run_Sudoku {
 
+  //constants
   private static final String CREATE = "create";
   private static final String SOLVE = "solve";
+  private static final String YES = "yes";
+  private static final String NO = "no";
   private static final boolean ERROR = false;
 
+  //variables
   private final BufferedReader keyboard;
   private final SudokuSolver solver;
   private final Sudoku_Generator generator;
 
+  //constructor
   public Run_Sudoku() {
     this.keyboard = new BufferedReader(new InputStreamReader(System.in));
     this.solver = new SudokuSolver();
@@ -21,11 +33,11 @@ public class Run_Sudoku {
 
   public static void main(String args[]) {
     Run_Sudoku runner = new Run_Sudoku();
+    boolean doAgain = false;
 
     // welcome the user to the program, describe functionality
     runner.welcomeUser();
 
-    boolean doAgain = false;
 
     do {
       // ask the user if they want to create puzzles or solve a single puzzle
@@ -49,7 +61,8 @@ public class Run_Sudoku {
         } else {
           System.out.println("Whoops! Something went wrong. :(");
         }
-      } else if(userGoal.equals(SOLVE)) {
+      }
+      else if(userGoal.equals(SOLVE)) {
         // what is the file name?
         String fileName = runner.getPuzzleToSolve();
 
@@ -60,7 +73,16 @@ public class Run_Sudoku {
       }
 
       // ask user if they want to exit the program
-    } while (doAgain == true);
+      String run_again = runner.ask_run_again();
+      if(run_again.equals(runner.YES))
+      {
+        doAgain=true;
+      }
+      else
+      {
+        doAgain=false;
+      }
+    } while (doAgain==true);
 
     System.out.println("Thanks for using our program! Have a great day");
   }
@@ -131,9 +153,13 @@ public class Run_Sudoku {
         handleInvalidResponse(result, "'" + CREATE + "' or '" + SOLVE + "''");
         result = keyboard.readLine();
       }
-    } catch (Exception e) {
-
-    } finally {
+    }
+    catch (Exception e)
+    {
+      // in case of IOException
+    }
+    finally
+    {
       return result;
     }
   }
@@ -192,7 +218,7 @@ public class Run_Sudoku {
   }
 
   private String getPuzzleToSolve() {
-    System.out.println("What is the relative path to the puzzle you are trying to sovle?");
+    System.out.println("What is the relative path to the puzzle you are trying to solve?");
     String path = "";
     try {
         path = keyboard.readLine();
@@ -232,6 +258,29 @@ public class Run_Sudoku {
     System.out.println("Sorry, '" + invalidResponse + "' is not a valid response.");
     System.out.println("Please enter one of the following: ");
     System.out.println(validResponses);
+  }
+
+  // This method returns whether or not a user wants to run the Sudoku program again
+  private String ask_run_again() {
+    System.out.println("Would you like to run program again? (Enter 'yes' or 'no')");
+    String result = "";
+
+    try {
+      result =  keyboard.readLine();
+
+      while(!result.equals(YES) && !result.equals(NO)) {
+        handleInvalidResponse(result, "'" + YES + "' or '" + NO + "''");
+        result = keyboard.readLine();
+      }
+    }
+    catch (Exception e)
+    {
+      // in case of IOException
+    }
+    finally
+    {
+      return result;
+    }
   }
 
 }
