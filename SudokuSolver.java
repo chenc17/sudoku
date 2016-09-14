@@ -13,26 +13,15 @@ public class SudokuSolver {
 
   // Return a container that holds a solved puzzle or empty if not solvable
   public Optional<Square[]> solve_puzzle(Square[] unsolvedPuzzle) {
-    // first ensure that the Square[] is of correct size
     if(!validate(unsolvedPuzzle)) {
-      System.out.println("Puzzle not of approriate size");
       return Optional.empty();
     }
 
     // get the set of unknown squares to iterate over for algorithms 1 and 2.
     Set<Square> unknownSquares = get_unknown(unsolvedPuzzle);
 
-    // 1. First solve as many as possible using 'Candidate Checking'
-
-    // 2. Now narrow down selection using 'Place Finding Method'
-
-    // 3. Finally, solve using a basic backtracking algorithm
+    // use a recursive DFS algorithm to find a single possible solution
     Optional<Square[]> solvedPuzzle = backtracking_solver(unsolvedPuzzle);
-    if(solvedPuzzle.isPresent()) {
-      System.out.println("Solved puzzle!");
-    } else {
-      System.out.println("Unable to solve puzzle :(");
-    }
 
     return solvedPuzzle;
   }
