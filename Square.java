@@ -7,8 +7,11 @@ import java.lang.Comparable;
 //Square Class
 //A square object is one box in a Sudoku grid
 //It has a column, row, 3x3 region, value, and square number
+
 //@authors Christine Chen and Matt Hino
 //@date 9/10/2016
+
+//The Comparable interface requires the compareTo() method
 public class Square implements Comparable<Square>
 {
 	private int column; //0 based
@@ -19,11 +22,12 @@ public class Square implements Comparable<Square>
 	private Set<Integer> possible_values;
 
 
+	//constants
 	public static final int INVALID_VAL = -1;
 	public static final int NUM_SQUARES_ROW_COL = 9;
-	public static final int MAX_SUDOKU_VAL=9;
+	public static final int MAX_SUDOKU_VAL = 9;
 	public static final int UNKNOWN = 0;
-	public static final int MIN_SUDOKU_VAL=0; // 0 indicates a "blank" square
+	public static final int MIN_SUDOKU_VAL = 0; // 0 indicates a "blank" square
 	public static final int MAX_ROW_COL = 8;
 	public static final int MIN_ROW_COL = 0;
 	public static final int NUM_SQUARES = (NUM_SQUARES_ROW_COL)*(NUM_SQUARES_ROW_COL);
@@ -60,12 +64,14 @@ public class Square implements Comparable<Square>
 		this.possible_values = getInitPossibleValues(val);
 	}
 
+	//helper method to initialize the row value for a square
 	private int get_row_idx_init(int square_num)
 	{
 		int row_idx = square_num/(this.NUM_SQUARES_ROW_COL);
 		return row_idx;
 	}
 
+	//helper method to initialize the column value for a square
 	private int get_col_idx_init(int row_idx, int square_num)
 	{
 		int col_idx=square_num-((this.NUM_SQUARES_ROW_COL)*row_idx);
@@ -122,7 +128,7 @@ public class Square implements Comparable<Square>
 		}
 	}
 
-	//getters
+	//getters/setters
 	public int get_column()
 	{
 		return column;
@@ -143,6 +149,7 @@ public class Square implements Comparable<Square>
 	{
 		return value;
 	}
+
 
 	public void set_value(int potential_value)
 	{
@@ -178,7 +185,7 @@ public class Square implements Comparable<Square>
 		return this.possible_values;
 	}
 
-	//square_num can be in the range 0 to 80 and values in set {0,...,9}
+	//square_num can be in the range 0 to 80 and value must be in range 0 to 9
 	public static boolean validate(int square_num, int val) {
 		if((square_num<NUM_SQUARES) && (square_num>=MIN_ROW_COL) &&
 			 (val>=MIN_SUDOKU_VAL && val<=MAX_SUDOKU_VAL))

@@ -88,9 +88,10 @@ public class Sudoku_Generator
     System.out.println();
   }
 
+  //sets the value of each square in sudoku_grid to UNKNOWN and
+  //refreshes the potential values for the square
   public void refresh_sudoku_grid()
   {
-    //set the value of each square to UNKNOWN and refresh the potential values for the square
     for(int i=0; i<sudoku_grid.length; i++)
     {
       sudoku_grid[i].set_value(Square.UNKNOWN);
@@ -98,6 +99,7 @@ public class Sudoku_Generator
     }
   }
 
+  //Pass in a difficulty level and get back an unsolved sudoku puzzle
   public Optional<Square[]> get_sudoku_puzzle(Level level_diff)
   {
     boolean created_sp_success=create_solved_puzzle();
@@ -122,6 +124,7 @@ public class Sudoku_Generator
     }
   }
 
+  //creates a fully solved sudoku puzzle
   private boolean create_solved_puzzle()
   {
     //know at this point that sudoku_grid has been initialized with 81 blank squares
@@ -153,7 +156,6 @@ public class Sudoku_Generator
           }
           else
           {
-            System.out.println("Error setting square " + sq_num + " value! Returning to create_solved_puzzle!\n");
             return false;
           }
 
@@ -170,12 +172,14 @@ public class Sudoku_Generator
 
   }
 
+  //selects a random index from the array passed in
   private int get_random_idx(Object[] array)
   {
     return new Random().nextInt(array.length);
   }
 
-  //assumes sudoku_grid has gone through the create_solved_puzzle() treatment
+  //this method assumes sudoku_grid has gone through the create_solved_puzzle() treatment
+  //and now removes square values to create an unsolved print_sudoku_puzzle
   private void create_unsolved_puzzle(Level difficulty)
   {
     int stop_at_num_empty_squares=0;
@@ -347,7 +351,7 @@ public class Sudoku_Generator
           if (!squares.contains(i))
           {
             sudoku_grid[i].set_value(Square.UNKNOWN);
-            //RESET POSSIBLE VALUES???
+            sudoku_grid[i].reset_possible_values();
           }
         }
 
@@ -366,7 +370,7 @@ public class Sudoku_Generator
 
   }
 
-
+  //creates a set with all the square numbers
   private Set<Integer> init_squares()
   {
     Set<Integer> square_nums = new HashSet<Integer>();
@@ -381,7 +385,8 @@ public class Sudoku_Generator
 
   }
 
-
+  //takes a square number and checks to see if that square creates a conflict in
+  //sudoku_grid
   private boolean check_for_conflict(int test_square)
   {
     for(int sq_num=0; sq_num<sudoku_grid.length && sq_num!=test_square; sq_num++)
@@ -403,8 +408,9 @@ public class Sudoku_Generator
       return false;
   }
 
-  //called after create_solved_puzzle()
-  public boolean check_valid_solved_sudoku_grid()
+  //verifies that sudoku_grid is actually fully solved without any conflicts
+  //this method should be called after create_solved_puzzle() does its work on sudoku_grid
+  private boolean check_valid_solved_sudoku_grid()
   {
 
     boolean conflict=false;

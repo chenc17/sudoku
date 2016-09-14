@@ -2,9 +2,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.Set;
-/**
-*
-**/
+
+//SudokuSolver
+//uses recursive DFS solution to find A solution to an unsolved sudoku puzzle
+//(note that there could be multiple solutions to a sudoku puzzle)
+
+//@authors Matt Hino and Christine Chen
+//@date 9/13/2016
 public class SudokuSolver {
 
   public SudokuSolver() {
