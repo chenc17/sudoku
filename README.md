@@ -1,10 +1,10 @@
 ## Synopsis
 
-This Sudoku program can:
-1.  Generate Sudoku puzzles: each puzzle will be written to its own text file…
-    a corresponding solution will also be written to its own text file
-2.  Solve Sudoku puzzles: the program can take in a text file that contains an unsolved Sudoku puzzle
-    and either create a file containing the solved puzzle or inform the user that the puzzle is unsolvable (see test_puzzle.txt for an example of how to format an input puzzle)
+This Sudoku program can: <br />
+1.  Generate Sudoku puzzles: each puzzle will be written to its own text file… <br />
+    a corresponding solution will also be written to its own text file <br />
+2.  Solve Sudoku puzzles: the program can take in a text file that contains an unsolved Sudoku puzzle <br />
+    and either create a file containing the solved puzzle or inform the user that the puzzle is unsolvable <br /> (see test_puzzle.txt for an example of how to format an input puzzle) <br />
 
 
 ## Running and Navigating Program
@@ -15,7 +15,7 @@ Running via commandline:
 3.	Type: java Run_Sudoku
 
 Navigating (one possible use case):
-1.  You should see a welcome message and the option to ##create## or ##solve##
+1.  You should see a welcome message and the option to create or solve
     Sudoku puzzles
 2.  If you type 'create', you will be asked how many puzzles you want to create. Enter a positive integer.
 3.  You will then be asked to enter a difficulty level for the puzzles.
@@ -32,4 +32,4 @@ Navigating (one possible use case):
 
 ##Important Note##
 While a Sudoku puzzle could potentially have multiple solutions, please note that
-SudokuSolver will just return ONE solution. 
+SudokuSolver will just return ONE solution.
