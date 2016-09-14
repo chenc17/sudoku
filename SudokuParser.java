@@ -66,6 +66,7 @@ public class SudokuParser {
                   squareList.add(new Square(square_no, Integer.parseInt(values[i])));
                 } catch (NumberFormatException nfe) {
                   System.out.println("Error in parsing Sudoku from file" + nfe);
+                  System.out.println("Unable to convert grid values.");
                 } finally {
                   square_no++;
                 }

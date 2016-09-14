@@ -38,9 +38,6 @@ public class Sudoku_Generator
   public static final int HARD_STOP_SQ_REM_MED=51; //30 left
   public static final int HARD_STOP_SQ_REM_DIFF=61; //20 left
 
-
-
-
   public Sudoku_Generator()
   {
     sudoku_grid = new Square[Square.NUM_SQUARES];
@@ -293,8 +290,6 @@ public class Sudoku_Generator
 
 
       }
-
-
 
       //try removing the values for the squares in square_candidates_num and try solving
       for(int i=0; i<num_squares_selected; i++)

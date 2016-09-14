@@ -1,4 +1,9 @@
+# ignore class files and text file
 *.class
 *.class~
 *_solved.txt
 *_output.txt
+
+# ignore subdirectories where we are saving puzzles
+*puzzles*/
+.DS_Store

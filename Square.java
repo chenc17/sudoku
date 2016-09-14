@@ -34,6 +34,10 @@ public class Square implements Comparable<Square>
 		this(INVALID_VAL, INVALID_VAL);
 	}
 
+	public Square(Square otherSquare) {
+		this(otherSquare.get_square_no(), otherSquare.get_value());
+	}
+
 	public Square(int square_number, int val)
 	{
 		if(validate(square_number, val)) {

@@ -17,11 +17,11 @@ public class SudokuSolver {
       return Optional.empty();
     }
 
-    // get the set of unknown squares to iterate over for algorithms 1 and 2.
-    Set<Square> unknownSquares = get_unknown(unsolvedPuzzle);
+    // create a copy of the unsolved puzzle to work on
+    Square[] copyPuzzle = copyPuzzle(unsolvedPuzzle);
 
-    // use a recursive DFS algorithm to find a single possible solution
-    Optional<Square[]> solvedPuzzle = backtracking_solver(unsolvedPuzzle);
+    // use a recursive algorithm to find a single possible solution
+    Optional<Square[]> solvedPuzzle = backtracking_solver(copyPuzzle);
 
     return solvedPuzzle;
   }
@@ -81,6 +81,14 @@ public class SudokuSolver {
                  .stream()
                  .filter(s -> (s.get_value() == Square.UNKNOWN))
                  .collect(Collectors.toSet());
+  }
+
+  private Square[] copyPuzzle(Square[] original) {
+    Square[] copy = new Square[original.length];
+    for(int i = 0; i < original.length; i++){
+      copy[i] = new Square(original[i]);
+    }
+    return copy;
   }
 
   private boolean has_conflict(Square[] puzzle, int square_no, int new_value) {
