@@ -129,6 +129,11 @@ int Square::get_value(void)
   return this->value;
 }
 
+int Square::get_square_no(void) {
+	return this->square_no;
+}
+
+
 void Square::set_value(int potential_value)
 {
   if(validate(this->square_no, potential_value)==true)

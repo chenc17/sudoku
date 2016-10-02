@@ -31,6 +31,7 @@ class Square
     int get_row(void);
     int get_region(void);
     int get_value(void);
+	int get_square_no(void);
     void set_value(int potential_value);
     std::set<int> get_possible_values(void);
     static bool validate(int square_num, int val);
