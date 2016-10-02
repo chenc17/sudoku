@@ -7,3 +7,7 @@
 # ignore subdirectories where we are saving puzzles
 *puzzles*/
 .DS_Store
+
+# ignore intelli-j created files.
+.idea/
+*.iml
