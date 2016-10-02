@@ -72,6 +72,13 @@ int Square::get_region_from_row_col(int row, int col)
   return region;
 }
 
+//constructors (note that default constructor shouldn't ever be used)
+Square::Square()
+{
+	Square(Square::INVALID_VAL, Square::INVALID_VAL);
+
+}
+
 Square::Square(int sq_num, int val)
 {
   if(validate(sq_num, val))

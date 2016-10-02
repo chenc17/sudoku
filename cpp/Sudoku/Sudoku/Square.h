@@ -23,6 +23,7 @@ class Square
 
   public:
     Square(int sq_number, int val);
+	Square();
     //Need a destructor????
     void set_possible_values(void);
 
