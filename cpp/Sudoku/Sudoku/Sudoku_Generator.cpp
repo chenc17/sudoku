@@ -31,7 +31,7 @@ Sudoku_Generator::Sudoku_Generator()
 	
 	for (int idx = 0; idx<Square::TOTAL_NUM_SQ; idx++)
 	{
-		sudoku_grid[idx] =  Square::Square(idx, Square::UNKNOWN);
+		sudoku_grid[idx] =  Square::Square(idx, 7);
 		
 		//make sure the declaration is valid
 		if (sudoku_grid[idx].get_column() == Square::INVALID_VAL)
@@ -43,6 +43,9 @@ Sudoku_Generator::Sudoku_Generator()
 }
 
 
+Square* Sudoku_Generator::get_sudoku_grid(void) {
+	return this->sudoku_grid;
+}
 
 
 //int main(int argc, char **argv)
