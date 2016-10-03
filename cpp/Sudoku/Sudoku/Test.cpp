@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "Square.h"
 #include "Sudoku_Solver.h"
+#include "Sudoku_Generator.h"
 
 using namespace std;
 
@@ -31,6 +32,7 @@ class Test
     static void validateHandlesTooLargeSquareNumTest(void);
     static void testToString(void);
 	static void testFindFirstUnknown(void);
+	static void testCreateSudokuGrid(void);
     int main(int argc, char **argv);
 
 
@@ -45,6 +47,7 @@ int main(int argc, char **argv)
   Test::testToString();
 
   Test::testFindFirstUnknown();
+  Test::testCreateSudokuGrid();
 
   return 0;
 }
@@ -87,4 +90,9 @@ void Test::testFindFirstUnknown() {
 	}
 	delete[] arr;
 	delete solver;
+}
+
+void Test::testCreateSudokuGrid()
+{
+	Sudoku_Generator * gen = new Sudoku_Generator();
 }
