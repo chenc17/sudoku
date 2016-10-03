@@ -12,7 +12,7 @@
 using namespace std;
 
 Sudoku_Solver::Sudoku_Solver() {
-	cout << "WTF\n";
+	
 }
 
 /*
