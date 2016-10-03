@@ -6,7 +6,7 @@
 #include <set>
 #include <assert.h>
 #include "Square.h"
-
+#include "Sudoku_Solver.h"
 
 using namespace std;
 
@@ -30,6 +30,7 @@ class Test
     static void validateHandlesAllValidParametersTest(void);
     static void validateHandlesTooLargeSquareNumTest(void);
     static void testToString(void);
+	static void testFindFirstUnknown(void);
     int main(int argc, char **argv);
 
 
@@ -42,6 +43,8 @@ int main(int argc, char **argv)
 
   Test::validateHandlesTooLargeSquareNumTest();
   Test::testToString();
+
+  Test::testFindFirstUnknown();
 
   return 0;
 }
@@ -63,7 +66,25 @@ void Test::validateHandlesTooLargeSquareNumTest() {
 void Test::testToString() {
   cout << "testToString\n";
   Square test_sq = Square::Square(3, 2);
-  cout << "Result: " << test_sq.toString() << "\n";
+  cout << "Result: " << test_sq.toString() << endl;
 
 
+}
+
+void Test::testFindFirstUnknown() {
+	Square* arr = new Square[3];
+	arr[0] = Square::Square(0, 1);
+	arr[1] = Square::Square(1, 2);
+	arr[2] = Square::Square(2, Square::UNKNOWN);
+
+	Sudoku_Solver* solver = new Sudoku_Solver();
+	int result = solver->get_first_unknown(arr, 3);
+
+	if (result != -1) {
+		cout << "Result: " << arr[result].toString() << endl;
+	} else {
+		cout << "ERROR";
+	}
+	delete[] arr;
+	delete solver;
 }
