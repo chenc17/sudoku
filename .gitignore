@@ -11,3 +11,6 @@
 # ignore intelli-j created files.
 .idea/
 *.iml
+
+# ignore visual studios stuffs
+*.sdf
