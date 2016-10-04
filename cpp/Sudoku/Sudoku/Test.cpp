@@ -36,6 +36,8 @@ class Test
 	static void testCreateSudokuGrid(void);
 	static void testParser(void);
     int main(int argc, char **argv);
+	static void testCreateSolvedSudokuGrid();
+	
 
 
 };
@@ -49,7 +51,7 @@ int main(int argc, char **argv)
   Test::testToString();
 
   Test::testFindFirstUnknown();
-  Test::testCreateSudokuGrid();
+  Test::testCreateSolvedSudokuGrid();
 
   Test::testParser();
 
@@ -96,10 +98,16 @@ void Test::testFindFirstUnknown() {
 	delete solver;
 }
 
-void Test::testCreateSudokuGrid()
+void Test::testCreateSolvedSudokuGrid()
 {
+
+	cout << endl << "testCreateSolvedSudokuGrid" << endl;
 	Sudoku_Generator * gen = new Sudoku_Generator();
 	gen->print_sudoku();
+	Level diff = easy;
+	gen->get_sudoku_puzzle(diff);
+	gen->print_sudoku();
+
 
 }
 

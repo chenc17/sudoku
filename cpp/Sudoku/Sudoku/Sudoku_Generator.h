@@ -17,11 +17,13 @@ private:
 	Square * sudoku_grid;
 	bool create_solved_puzzle();
 	void create_unsolved_puzzle(Level difficulty);
+	int get_random_idx(int len_array);
+	bool check_for_conflict(int sq_num);
 	
 public:
 	Sudoku_Generator();
 	Square * get_sudoku_puzzle(Level level_diff);
-	Square * get_sudoku_grid(void);
+	
 	void print_sudoku();
 	
 

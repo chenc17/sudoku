@@ -35,6 +35,7 @@ class Square
     void set_value(int potential_value);
     std::set<int> get_possible_values(void);
     static bool validate(int square_num, int val);
+	void Square::remove_int(int value);
 
     //int compareTo(Square otherSquare);
     std::string toString();

@@ -111,6 +111,11 @@ void Square::set_possible_values(void)
   }
 }
 
+// remove a number from the set of potential numbers the square could be
+void Square::remove_int(int value) {
+	this->possible_values.erase(value);
+}
+
 int Square::get_column(void)
 {
   return this->column;
