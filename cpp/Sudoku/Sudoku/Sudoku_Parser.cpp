@@ -42,9 +42,7 @@ int Sudoku_Parser::write_sudoku(Square* puzzle, string fileName) {
 			myfile << "| ";
 		}
 
-		int numberToWrite = puzzle[square_no].get_value();
-		cout << puzzle[square_no].get_square_no() << endl;
-		cout << square_no << endl;
+		int numberToWrite = (puzzle + square_no) -> get_value();
 		if (numberToWrite == Square::UNKNOWN) {
 			myfile << "- ";
 		}
@@ -85,7 +83,7 @@ Square* Sudoku_Parser::parseSudoku(string file_name) {
 			for (int i = 0; i < line.size(); i++) {
 				if (line[i] != ' ') {
 					int value = atoi(&line[i]);
-					square_arr[square_no] = Square(square_no, value);
+					*(square_arr + square_no) = Square(square_no, value);
 					square_no++;
 				}
 			}
