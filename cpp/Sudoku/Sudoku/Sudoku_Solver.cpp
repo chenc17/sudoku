@@ -48,7 +48,7 @@ Square* Sudoku_Solver::backtracking_solver(Square* puzzle) {
 	for (int val : possible_values) {
 		if (!has_conflict(puzzle, Square::TOTAL_NUM_SQ, square_no, val)) {
 			// assign possible value to that square, and recurse
-			puzzle[square_no].set_value(val);
+			(puzzle + square_no ) -> set_value(val);
 
 			// RECURSIVE CASE: if solver returns a solved puzzle, return the puzzle
 			Square* solved_puzzle = backtracking_solver(puzzle);
@@ -56,7 +56,7 @@ Square* Sudoku_Solver::backtracking_solver(Square* puzzle) {
 				return solved_puzzle;
 			}
 
-			puzzle[square_no].set_value(Square::UNKNOWN);
+			(puzzle + square_no) -> set_value(Square::UNKNOWN);
 		}
 
 	}
@@ -67,7 +67,7 @@ Square* Sudoku_Solver::backtracking_solver(Square* puzzle) {
 int Sudoku_Solver::get_first_unknown(Square* puzzle, int size) {
 	// now look for the first Square of unkown value.
 	for (int i = 0; i < size; i++) {
-		Square tmp = puzzle[i];
+		Square tmp = *(puzzle + i);
 		if (tmp.get_value() == Square::UNKNOWN) {
 			return i;
 		}

@@ -113,7 +113,7 @@ void Test::testCreateSolvedSudokuGrid()
 
 void Test::testParser()
 {
-	int result = Solver_Test::parser_test();
+	int result = Solver_Test::parser_test(true);
 	if (result == 0) {
 		cout << "nice!" << endl;
 	}

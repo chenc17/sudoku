@@ -11,6 +11,6 @@ using namespace std;
 class Solver_Test {
 
 public:
-	static int parser_test();
+	static int parser_test(bool timed);
 };
 #endif
