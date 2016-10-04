@@ -99,10 +99,7 @@ void Test::testFindFirstUnknown() {
 void Test::testCreateSudokuGrid()
 {
 	Sudoku_Generator * gen = new Sudoku_Generator();
-	Square s1 = gen->get_sudoku_grid()[0];
-	Square s2 = gen->get_sudoku_grid()[1];
-
-	Square s3 = (gen->get_sudoku_grid())[2];
+	gen->print_sudoku();
 
 }
 

@@ -31,10 +31,11 @@ Sudoku_Generator::Sudoku_Generator()
 	
 	for (int idx = 0; idx<Square::TOTAL_NUM_SQ; idx++)
 	{
-		sudoku_grid[idx] =  Square::Square(idx, 7);
+		Square * sud_ptr = sudoku_grid + idx;
+		sud_ptr->Square::Square(idx, Square::UNKNOWN);
 		
 		//make sure the declaration is valid
-		if (sudoku_grid[idx].get_column() == Square::INVALID_VAL)
+		if (sud_ptr->get_column() == Square::INVALID_VAL)
 		{
 			cout<<"Error in game initialization. Exiting."<<endl;
 			exit(0);
@@ -42,6 +43,21 @@ Sudoku_Generator::Sudoku_Generator()
 	}
 }
 
+void Sudoku_Generator::print_sudoku()
+{
+
+	for (int i = 0; i < Square::TOTAL_NUM_SQ; i++)
+	{
+		Square * sud_ptr = sudoku_grid + i;
+		if (sud_ptr->get_square_no() % Square::NUM_SQ_ROW_COL == 0)
+		{
+			cout << endl;
+		}
+		cout<<sud_ptr->get_value();
+
+	}
+	cout << endl;
+}
 
 Square* Sudoku_Generator::get_sudoku_grid(void) {
 	return this->sudoku_grid;

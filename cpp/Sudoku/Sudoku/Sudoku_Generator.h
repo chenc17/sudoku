@@ -22,8 +22,7 @@ public:
 	Sudoku_Generator();
 	Square * get_sudoku_puzzle(Level level_diff);
 	Square * get_sudoku_grid(void);
-	int main(int argc, char **argv);
-
+	void print_sudoku();
 	
 
 
