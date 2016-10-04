@@ -39,6 +39,9 @@
     <ClInclude Include="Solver_Test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Run_Sudoku.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
