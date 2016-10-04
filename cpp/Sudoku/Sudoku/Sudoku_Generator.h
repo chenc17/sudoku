@@ -19,6 +19,7 @@ private:
 	void create_unsolved_puzzle(Level difficulty);
 	int get_random_idx(int len_array);
 	bool check_for_conflict(int sq_num);
+	std::set<int> init_squares();
 	
 public:
 	Sudoku_Generator();

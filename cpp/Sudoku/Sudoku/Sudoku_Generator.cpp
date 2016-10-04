@@ -8,9 +8,12 @@
 #include "Square.h"
 #include "Sudoku_Generator.h"
 #include <time.h> 
+#include "Sudoku_Solver.h"
 
 
 using namespace std;
+
+//destructor? initialize?
 
 
 //Sudoku_Generator
@@ -116,7 +119,6 @@ bool Sudoku_Generator::create_solved_puzzle()
 			}
 			else
 			{
-				
 				return false;
 			}
 		
@@ -128,12 +130,9 @@ bool Sudoku_Generator::create_solved_puzzle()
 			sq_num = sq_num - 2;
 		}
 	}
-	
 
 	return true;
-		
 }
-
 
 
 int Sudoku_Generator::get_random_idx(int len_array)
@@ -161,63 +160,269 @@ bool Sudoku_Generator::check_for_conflict(int sq_num_test)
 				return true;
 			}
 		}
-
 	}
 	return false;
 }
-//	//creates a fully solved sudoku puzzle
-//	private boolean create_solved_puzzle()
-//	{
-//		//know at this point that sudoku_grid has been initialized with 81 blank squares
-//		//go through sudoku_grid and start giving the squares values
-//		for (int sq_num = 0; sq_num<sudoku_grid.length; sq_num++)
+
+
+//this method assumes sudoku_grid has gone through the create_solved_puzzle() treatment
+//and now removes square values to create an unsolved sudoku_puzzle
+//the approach taken is based on the algorithm found: http://www.sudokuwiki.org/Sudoku_Creation_and_Grading.pdf
+void Sudoku_Generator::create_unsolved_puzzle(Level difficulty)
+{
+
+	/*if the difficulty is RANDOM or any other value other than those listed in the enum,
+	assign a difficulty level here*/
+	if (difficulty != Level::easy && difficulty != Level::medium && difficulty != Level::difficult)
+	{
+		//randomly assign a difficulty level out of the 3 possible levels
+		int difficulty_val = get_random_idx(3);
+		if (difficulty_val == 0)
+		{
+			difficulty = Level::easy;
+		}
+		else if (difficulty_val == 1)
+		{
+			difficulty = Level::medium;
+		}
+		else if (difficulty_val == 2)
+		{
+			difficulty = Level::difficult;
+		}
+	}
+
+	/*the difficulty level affects the number of squares to remove
+	set that value here*/
+	int num_squares_to_rem = 0;
+	switch (difficulty)
+	{
+		case Level::easy:
+			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_EASY;
+			break;
+		case Level::medium:
+			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_MED;
+			break;
+		case Level::difficult:
+			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_DIFF;
+			break;
+		default:
+			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_EASY;
+	
+	}
+
+	//almost ready to start clearing squares
+	int current_num_empty_sq = 0;
+
+	//these two arrays keep track of the square number and corresponding value of
+	//squares that are candidates for "clearing" in the event that a backtrack is necessary
+	
+	//note that there can only be at most REMOVE_NUM_STAGE_1 candidate squares at a time 
+	//(the number of squares to remove decreases in each subsequent stage)
+	int* square_no_candidates = new int[Sudoku_Generator::REMOVE_NUM_STAGE_1];
+	int* square_value_candidates = new int[Sudoku_Generator::REMOVE_NUM_STAGE_1];
+	
+	//get a solver to use in determining that sudoku grid is still solvable after "clearing" squares
+	Sudoku_Solver*solver = new Sudoku_Solver();
+	
+	//fills squares set with the square numbers that correspond to squares that still have a value
+	std::set<int> squares_with_val = init_squares(); 
+
+	//FINALLY READY TO START RIPPING AWAY SQUARE VALUES
+	while (current_num_empty_sq<num_squares_to_rem)
+	{
+
+		//make sure the candidate arrays are reset
+		for (int i = 0; i<4; i++)
+		{
+			square_candidates_num[i] = -1;
+			square_candidates_val[i] = -1;
+		}
+
+
+		//the number of squares to attempt to "clear" each time
+		//depends on the number of currently "cleared" squares
+		if (num_empty_squares<STAGE_2_SQ_REM)
+		{
+			//System.out.println("\nIn STAGE 1\n");
+			num_squares_to_clear = REMOVE_SQ_STAGE_1;
+		}
+		else if (num_empty_squares<STAGE_3_SQ_REM)
+		{
+			//System.out.println("\nIn STAGE 2\n");
+			num_squares_to_clear = REMOVE_SQ_STAGE_2;
+		}
+		else
+		{
+			//System.out.println("\nIn STAGE 3\n");
+			num_squares_to_clear = REMOVE_SQ_STAGE_3;
+		}
+
+
+		//keeps track of how many squares have been selected as candidates
+		int num_squares_selected = 0;
+		while (num_squares_selected<num_squares_to_clear)
+		{
+			//get a random square candidate
+			Object[] squares_arr = squares.toArray();
+			int square_no = (int)squares_arr[get_random_idx(squares_arr)];
+			//make sure this square hasn't already been chosen as a candidate
+			if (IntStream.of(square_candidates_num).anyMatch(x->x == square_no))
+			{
+				continue;
+			}
+			else
+			{
+				//enter the square and its value into the appropriate arrays
+				square_candidates_num[num_squares_selected] = square_no;
+				square_candidates_val[num_squares_selected] = sudoku_grid[square_no].get_value();
+				num_squares_selected++;
+			}
+
+
+	//deallocate square_candidates_num
+	//deallocate solver
+}
+//returns an array containing the numbers 0 up to but not including Square::TOTAL_NUM_SQ
+std::set<int> Sudoku_Generator::init_squares()
+{
+	
+	std::set<int> square_nums;
+	
+	for (int i = 0; i<Square::TOTAL_NUM_SQ; i++)
+	{
+		square_nums.insert(i);
+	}
+	
+	return square_nums;
+	
+	
+}
+
+//
+//		while (num_empty_squares<stop_at_num_empty_squares)
 //		{
 //
-//			Set<Integer> poss_vals_set = sudoku_grid[sq_num].get_possible_values();
-//			//check that there are still values in the square's possible_values set
-//			if (poss_vals_set.isEmpty() == false)
+//			//make sure the arrays are reset
+//			for (int i = 0; i<4; i++)
 //			{
-//				//randomly choose a value from square_poss_vals (SEEMS A LITTLE IFFY)
-//				Object[] poss_vals_arr = poss_vals_set.toArray();
-//				int rand_val = (int)poss_vals_arr[get_random_idx(poss_vals_arr)];
-//				//System.out.println(rand_val);
+//				square_candidates_num[i] = -1;
+//				square_candidates_val[i] = -1;
+//			}
 //
-//				//check to see if setting rand_val as sudoku_grid[sq_num]'s value
-//				//results in a valid sudoku grid
-//				sudoku_grid[sq_num].set_value(rand_val);
-//				if (sudoku_grid[sq_num].get_value() == rand_val)
+//
+//			//the number of squares to attempt to "clear" each time
+//			//depends on the number of currently "cleared" squares
+//			if (num_empty_squares<STAGE_2_SQ_REM)
+//			{
+//				//System.out.println("\nIn STAGE 1\n");
+//				num_squares_to_clear = REMOVE_SQ_STAGE_1;
+//			}
+//			else if (num_empty_squares<STAGE_3_SQ_REM)
+//			{
+//				//System.out.println("\nIn STAGE 2\n");
+//				num_squares_to_clear = REMOVE_SQ_STAGE_2;
+//			}
+//			else
+//			{
+//				//System.out.println("\nIn STAGE 3\n");
+//				num_squares_to_clear = REMOVE_SQ_STAGE_3;
+//			}
+//
+//
+//			//keeps track of how many squares have been selected as candidates
+//			int num_squares_selected = 0;
+//			while (num_squares_selected<num_squares_to_clear)
+//			{
+//				//get a random square candidate
+//				Object[] squares_arr = squares.toArray();
+//				int square_no = (int)squares_arr[get_random_idx(squares_arr)];
+//				//make sure this square hasn't already been chosen as a candidate
+//				if (IntStream.of(square_candidates_num).anyMatch(x->x == square_no))
 //				{
-//					boolean conflict = check_for_conflict(sq_num);
-//					sudoku_grid[sq_num].remove_int(rand_val);
-//					if (conflict != false)
-//					{
-//						//there's an issue with this value, try again
-//						sq_num--;
-//					}
+//					continue;
 //				}
 //				else
 //				{
-//					return false;
+//					//enter the square and its value into the appropriate arrays
+//					square_candidates_num[num_squares_selected] = square_no;
+//					square_candidates_val[num_squares_selected] = sudoku_grid[square_no].get_value();
+//					num_squares_selected++;
+//				}
+//
+//
+//			}
+//
+//			//try removing the values for the squares in square_candidates_num and try solving
+//			for (int i = 0; i<num_squares_selected; i++)
+//			{
+//				sudoku_grid[square_candidates_num[i]].set_value(Square.UNKNOWN);
+//				sudoku_grid[square_candidates_num[i]].reset_possible_values();
+//			}
+//
+//			//System.out.println("CANDIDATE!");
+//			//print_sudoku_puzzle();
+//			//System.out.println();
+//
+//			Optional<Square[]> solved = solver.solve_puzzle(sudoku_grid);
+//			//System.out.println("After Attempted Solve!");
+//			//print_sudoku_puzzle();
+//			//System.out.println();
+//
+//			if (!(solved.isPresent()))
+//			{
+//				//PUZZLE IS UNSOLVABLE
+//				//backtrack and try again
+//				for (int i = 0; i<num_squares_selected; i++)
+//				{
+//					sudoku_grid[square_candidates_num[i]].set_value(square_candidates_val[i]);
+//					sudoku_grid[square_candidates_num[i]].reset_possible_values();
+//				}
+//
+//				if (num_empty_squares>STAGE_3_SQ_REM)
+//				{
+//					//if we're already in stage 3, just stop
+//					break;
+//				}
+//				else
+//				{
+//					//System.out.println("---------------------------------------------");
+//					continue;
 //				}
 //
 //			}
 //			else
 //			{
-//				//need to reset possible_values for this square and backtrack to previous square
-//				sudoku_grid[sq_num].reset_possible_values();
-//				sq_num = sq_num - 2;
+//				//the puzzle is solvable
+//				//update num_empty_squares
+//				num_empty_squares = num_empty_squares + num_squares_selected;
+//
+//				//remove the appropriate squares from the squares set
+//				for (int i = 0; i<num_squares_selected; i++)
+//				{
+//					squares.remove(square_candidates_num[i]);
+//				}
+//
+//				//since the solver solved the puzzle, need to reinstate the blanks for the next Round
+//				for (int i = 0; i<Square.NUM_SQUARES; i++)
+//				{
+//					if (!squares.contains(i))
+//					{
+//						sudoku_grid[i].set_value(Square.UNKNOWN);
+//						sudoku_grid[i].reset_possible_values();
+//					}
+//				}
+//
+//				//System.out.println("Round Completed!");
+//				//print_sudoku_puzzle();
+//				//System.out.println();
+//				//System.out.println("---------------------------------------------");
+//
 //			}
+//
+//
+//
 //		}
 //
-//		return true;
+//		//System.out.println ("NUMBER OF SQUARES REMOVED " + num_empty_squares + "\n");
 //
 //	}
-//
-//	//selects a random index from the array passed in
-//	private int get_random_idx(Object[] array)
-//	{
-//		return new Random().nextInt(array.length);
-//	}
-//
-
-
