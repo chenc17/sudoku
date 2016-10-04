@@ -8,6 +8,7 @@
 #include "Square.h"
 #include "Sudoku_Solver.h"
 #include "Sudoku_Generator.h"
+#include "Solver_Test.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ class Test
     static void testToString(void);
 	static void testFindFirstUnknown(void);
 	static void testCreateSudokuGrid(void);
+	static void testParser(void);
     int main(int argc, char **argv);
 
 
@@ -48,6 +50,8 @@ int main(int argc, char **argv)
 
   Test::testFindFirstUnknown();
   Test::testCreateSudokuGrid();
+
+  Test::testParser();
 
   return 0;
 }
@@ -100,4 +104,15 @@ void Test::testCreateSudokuGrid()
 
 	Square s3 = (gen->get_sudoku_grid())[2];
 
+}
+
+void Test::testParser()
+{
+	int result = Solver_Test::parser_test();
+	if (result == 0) {
+		cout << "nice!" << endl;
+	}
+	else {
+		cout << "oops!" << endl;
+	}
 }

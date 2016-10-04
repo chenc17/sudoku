@@ -34,7 +34,7 @@ Square* Sudoku_Solver::backtracking_solver(Square* puzzle) {
 	int first_unknown = Sudoku_Solver::get_first_unknown(puzzle, Square::TOTAL_NUM_SQ);
 
 	// Base Case: if there are no unknown squares, we've solved the puzzle :)
-	if (first_unknown != -1) {
+	if (first_unknown == -1) {
 		return puzzle;
 	}
 

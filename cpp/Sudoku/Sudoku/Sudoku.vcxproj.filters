@@ -33,6 +33,12 @@
     <ClInclude Include="Sudoku_Solver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sudoku_Parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Solver_Test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -54,6 +60,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sudoku_Solver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sudoku_Parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Solver_Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
