@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <direct.h>
 #include <stdio.h>
 #include <set>
+#include <ctime>
 #include <algorithm>
 
 using namespace std;
@@ -16,21 +18,20 @@ using namespace std;
 
 //constants
 const string Run_Sudoku::CREATE = "CREATE";
-const string SOLVE = "SOLVE";
-const string YES = "YES";
-const string NO = "NO";
-const bool ERROR = false;
+const string Run_Sudoku::SOLVE = "SOLVE";
+const string Run_Sudoku::YES = "YES";
+const string Run_Sudoku::NO = "NO";
+const bool  Run_Sudoku::OOPS = false;
+
+// constants for comparing what level the user inputted
+const string EASY = "EASY";
+const string MEDIUM = "MEDIUM";
+const string DIFFICULT = "DIFFICULT";
+const string RANDOM = "RANDOM";
 
 //variables
 Sudoku_Solver* solver;
 Sudoku_Generator* generator;
-
-bool create_puzzles(int num_puzzles, Level level);
-bool is_valid_level(string lvl);	// determines if user gave a valid puzzle level
-string get_solution_filename(string original); // creates the filename for the solution
-void handle_invalid_response(string invalid_response, string valid_response);
-bool ask_run_again(void);			// asks the user if they want to re-run the program, true if yes.
-
 
 // constructor destructor
 Run_Sudoku::Run_Sudoku() {
@@ -58,12 +59,12 @@ int Run_Sudoku::main() {
 		if (user_goal.compare(Run_Sudoku::CREATE) == 0) {
 			// get the information from the user
 			int num_to_create = runner->get_num_puzzles();
-			string difficulty = runner->get_puzzle_level();
+			Level difficulty = runner->get_puzzle_level();
 			cout << "Creating " << num_to_create << "puzzles of " << difficulty << " difficulty" << endl;
 
 			// create the puzzles and let the user know the result.
 			bool status = runner->create_puzzles(num_to_create, difficulty);
-			if (status != Run_Sudoku::ERROR) {
+			if (status != Run_Sudoku::OOPS) {
 				cout << "Done creating puzzles! Have fun solving them!" << endl;
 			}
 			else {
@@ -83,6 +84,9 @@ int Run_Sudoku::main() {
 		do_again = runner->ask_run_again();
 	} while (do_again);
 
+
+
+	return 0;
 } // main
 
 // displays nice welcome message to user of program.
@@ -149,7 +153,7 @@ int Run_Sudoku::get_num_puzzles(void) {
 }
 
 // asks user what difficulty puzzle to create
-string  Run_Sudoku::get_puzzle_level(void) {
+Level Run_Sudoku::get_puzzle_level(void) {
 	cout << "Would you like your puzzle difficulty to be" << endl;
 	cout << "'easy', 'medium', 'difficult', or 'random'?" << endl;
 
@@ -157,13 +161,17 @@ string  Run_Sudoku::get_puzzle_level(void) {
 	// until the user types in one of the specified difficulties, continue to ask
 	getline(cin, difficulty);
 	transform(difficulty.begin(), difficulty.end(), difficulty.begin(), toupper);
-	while (!is_valid_level(difficulty)) {
+
+	Level lvl = Run_Sudoku::string_to_level(difficulty);
+
+	while (lvl != none) {
 		handle_invalid_response(difficulty, "'easy', 'medium', 'difficult', or 'random'?");
 		getline(cin, difficulty);
 		transform(difficulty.begin(), difficulty.end(), difficulty.begin(), toupper);
+		lvl = Run_Sudoku::string_to_level(difficulty);
 	}
 	
-	return difficulty;
+	return lvl;
 }
 
 // asks user for relative path to puzzle
@@ -174,6 +182,30 @@ string Run_Sudoku::get_puzzle_to_solve(void) {
 	getline(cin, path);
 
 	return path;
+}
+
+// asks user if they want to run the program again
+bool Run_Sudoku::ask_run_again(void) {
+	cout << "Would you like to run the program again?" << endl;
+	cout << "Please enter 'yes' or 'no'" << endl;
+
+	string response;
+	getline(cin, response);
+
+	transform(response.begin(), response.end(), response.begin(), toupper);
+
+	while (YES.compare(response) != 0 || NO.compare(response) != 0) {
+		handle_invalid_response(response, "'" + YES + "' or '" + NO + "'");
+		getline(cin, response);
+		transform(response.begin(), response.end(), response.begin(), toupper);
+	}
+
+	if (YES.compare(response) == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 // solves the puzzle at a given path
@@ -191,4 +223,89 @@ void Run_Sudoku::solve_puzzle(string file) {
 		Sudoku_Parser::write_sudoku(solved, solution_file);
 		cout << "Solved puzzle! See: " << solution_file << endl;
 	}
+}
+
+bool Run_Sudoku::create_puzzles(int num_puzzles, Level level) {
+	const char puzzle_path[] = "./puzzles";
+	const char solution_path[] = "./solutions";
+
+	// create directories to hold the puzzles and solutions.
+	if (create_folder(puzzle_path) != 0) return false;
+	if (create_folder(solution_path) !=0) return false;
+
+	// now create the puzzles and solutions. save them to 
+	// appropriate folders.
+	Square* puzzle;
+	Square* solved;
+	for (int i = 0; i < num_puzzles;) {
+		puzzle = generator->get_sudoku_puzzle(level);
+
+		if (puzzle != nullptr) {
+			solved = solver->solve_puzzle(puzzle);
+			if (solved != nullptr) {
+				long now = (long)time(0);
+
+				string puzzle_name = "./puzzles/puzzle_" + to_string(i) + "_" + to_string(now) + ".txt";
+				string solution_name = "./solutions/puzzle_" + to_string(i) + "_" + to_string(now) + "_solution_" + ".txt";
+
+				int result_p = Sudoku_Parser::write_sudoku(puzzle, puzzle_name);
+				int result_s = Sudoku_Parser::write_sudoku(solved, solution_name);
+
+				if (result_p == result_s == 0) {
+					i++; // only increment if we can find a solution
+				}
+			}
+		}
+	}
+	generator->refresh_sudoku_grid();
+	return true;
+}
+
+// try and create a directory and if there is an err, inspect it
+// if it's a path not found err, that's not good. otherwise
+// we should be ok.
+bool Run_Sudoku::create_folder(const char path[]) {
+	if (_mkdir(path) != 0) {
+		if (errno == ENOENT) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
+
+// converts a string to the specified lvl. if the lvl is not easy,
+// medium, difficult, or random, return none and handle accordingly.
+Level Run_Sudoku::string_to_level(string lvl) {
+	// upper case
+	transform(lvl.begin(), lvl.end(), lvl.begin(), toupper);
+
+	if (EASY.compare(lvl) == 0) {
+		return easy;
+	}
+	else if (MEDIUM.compare(lvl) == 0) {
+		return medium;
+	}
+	else if (DIFFICULT.compare(lvl) == 0) {
+		return difficult;
+	}
+	else if (RANDOM.compare(lvl) == 0) {
+		return random;
+	}
+	else {
+		return none;
+	}
+}
+
+void Run_Sudoku::handle_invalid_response(string invalid_response, string valid_response) {
+	cout << "Sorry, " + invalid_response + "' is not a valid response." << endl;
+	cout << "Please enter one of the following: " << endl;
+	cout << valid_response << endl;
+}
+
+string Run_Sudoku::get_solution_filename(string original) {
+	original.substr(0, original.find_last_of("."));
+	return original;
 }

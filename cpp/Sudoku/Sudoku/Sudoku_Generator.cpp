@@ -394,6 +394,11 @@ bool Sudoku_Generator::check_valid_solved_sudoku_grid()
 	return true;
 }
 
-
+void Sudoku_Generator::refresh_sudoku_grid(void) {
+	for (int i = 0; i < Square::TOTAL_NUM_SQ; i++) {
+		(sudoku_grid + i)->set_value(Square::UNKNOWN);
+		(sudoku_grid + i)->set_possible_values();
+	}
+}
 
 

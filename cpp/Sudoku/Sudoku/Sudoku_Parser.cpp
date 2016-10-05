@@ -53,6 +53,7 @@ int Sudoku_Parser::write_sudoku(Square* puzzle, string fileName) {
 
 	myfile << "| " << endl << Sudoku_Parser::LINE_SEPARATOR;
 	myfile.close();
+	return 0;
 }
 
 /*

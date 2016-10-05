@@ -9,6 +9,7 @@
 #include "Sudoku_Solver.h"
 #include "Sudoku_Generator.h"
 #include "Solver_Test.h"
+#include "Run_Sudoku.h"
 
 using namespace std;
 
@@ -35,11 +36,9 @@ class Test
 	static void testFindFirstUnknown(void);
 	static void testCreateSudokuGrid(void);
 	static void testParser(void);
-    int main(int argc, char **argv);
+	int notmain(int argc, char **argv);
 	static void testCreateSolvedSudokuGrid();
 	
-
-
 };
 
 int main(int argc, char **argv)
