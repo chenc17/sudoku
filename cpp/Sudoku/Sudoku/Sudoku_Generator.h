@@ -7,7 +7,7 @@
 #define _SUDOKU_GEN_H
 
 
-enum Level { easy, medium, difficult };
+enum Level { easy, medium, difficult, random, none };
 
 class Sudoku_Generator
 {
@@ -25,7 +25,7 @@ private:
 public:
 	Sudoku_Generator();
 	Square * get_sudoku_puzzle(Level level_diff);
-	
+	void refresh_sudoku_grid(void);
 	void print_sudoku();
 	
 

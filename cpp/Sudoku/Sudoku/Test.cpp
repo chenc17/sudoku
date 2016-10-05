@@ -9,6 +9,7 @@
 #include "Sudoku_Solver.h"
 #include "Sudoku_Generator.h"
 #include "Solver_Test.h"
+#include "Run_Sudoku.h"
 
 using namespace std;
 
@@ -35,25 +36,27 @@ class Test
 	static void testFindFirstUnknown(void);
 	static void testCreateSudokuGrid(void);
 	static void testParser(void);
-    int main(int argc, char **argv);
+	int notmain(int argc, char **argv);
 	static void testCreateSolvedSudokuGrid();
 	
-
-
 };
 
 int main(int argc, char **argv)
 {
-  cout << "Tests for Square.cpp:\n";
-  Test::validateHandlesAllValidParametersTest();
+  //cout << "Tests for Square.cpp:\n";
+  //Test::validateHandlesAllValidParametersTest();
 
-  Test::validateHandlesTooLargeSquareNumTest();
-  Test::testToString();
+  //Test::validateHandlesTooLargeSquareNumTest();
+  //Test::testToString();
 
-  Test::testFindFirstUnknown();
-  Test::testCreateSolvedSudokuGrid();
+  //Test::testFindFirstUnknown();
+  //Test::testCreateSolvedSudokuGrid();
 
-  Test::testParser();
+  //Test::testParser();
+
+  Run_Sudoku* runner = new Run_Sudoku();
+  runner->main();
+  delete runner;
 
   return 0;
 }
