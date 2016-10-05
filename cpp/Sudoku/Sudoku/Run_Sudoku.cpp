@@ -65,9 +65,11 @@ int Run_Sudoku::main() {
 			// create the puzzles and let the user know the result.
 			bool status = runner->create_puzzles(num_to_create, difficulty);
 			if (status != Run_Sudoku::OOPS) {
+				cout << endl;
 				cout << "Done creating puzzles! Have fun solving them!" << endl;
 			}
 			else {
+				cout << endl;
 				cout << "Whoops! Something went wrong :(" << endl;
 			}
 		}
@@ -94,7 +96,7 @@ void Run_Sudoku::welcome_user(void) {
 	cout << "Welcome to the Sudoku Suite!" << endl;
 	cout << "This program is designed so that you can create ";
 	cout << "and solve some" << endl << "sudoku puzzles ";
-	cout << "or solved an already created one." << endl;
+	cout << "or solved an already created one." << endl << endl;
 }
 
 // asks if user wants to create or solve puzzles
@@ -107,12 +109,15 @@ string Run_Sudoku::user_goals() {
 	// transform string to upper case
 	transform(result.begin(), result.end(), result.begin(), toupper);
 	
+	cout << endl;
+
 	// keep asking until the user types 'create' or 'solve'
 	while (!(Run_Sudoku::CREATE.compare(result) == 0 ||
 			 Run_Sudoku::SOLVE.compare(result) == 0)) {
 		handle_invalid_response(result, "'" + Run_Sudoku::CREATE + "' or '" + Run_Sudoku::SOLVE + "'");
 		getline(cin, result);
 		transform(result.begin(), result.end(), result.begin(), toupper);
+		cout << endl;
 	}
 
 	return result;
@@ -130,7 +135,7 @@ int Run_Sudoku::get_num_puzzles(void) {
 	// if the input is not an integer, handle nicely and ask again.
 	while (!valid) {
 		getline(cin, result);
-
+		cout << endl;
 		try{
 			num_puzzles = stoi(result);
 
@@ -162,7 +167,7 @@ Level Run_Sudoku::get_puzzle_level(void) {
 	getline(cin, difficulty);
 	transform(difficulty.begin(), difficulty.end(), difficulty.begin(), toupper);
 
-	cout << difficulty << endl;
+	cout << endl;
 
 	Level lvl = Run_Sudoku::string_to_level(difficulty);
 
@@ -182,24 +187,26 @@ string Run_Sudoku::get_puzzle_to_solve(void) {
 	string path;
 
 	getline(cin, path);
-
+	cout << endl;
 	return path;
 }
 
 // asks user if they want to run the program again
 bool Run_Sudoku::ask_run_again(void) {
+	cout << endl;
 	cout << "Would you like to run the program again?" << endl;
 	cout << "Please enter 'yes' or 'no'" << endl;
 
 	string response;
 	getline(cin, response);
-
 	transform(response.begin(), response.end(), response.begin(), toupper);
 
+	cout << endl;
 	while (YES.compare(response) != 0 && NO.compare(response) != 0) {
 		handle_invalid_response(response, "'" + YES + "' or '" + NO + "'");
 		getline(cin, response);
 		transform(response.begin(), response.end(), response.begin(), toupper);
+		cout << endl;
 	}
 
 	if (YES.compare(response) == 0) {
