@@ -11,6 +11,15 @@
 
 using namespace std;
 
+//Sudoku_Solver
+//solve_puzzle() method takes an unsolved puzzle (array of Squares) and returns a solved puzzle (as array of Squares). 
+//The algorithm used here is “backtracking recursive”, meaning the algorithm will keep filling in blank squares until it hits a 
+//dead end (all values for a square have been tried)…at that point it will back track and recurse again to try to find a solution.
+//The solver will declare a puzzle unsolvable after it has gone through every potential possible value for every empty square without
+//finding a solution.
+
+//@authors Matt Hino and Christine Chen
+//@date 10/1/2016
 Sudoku_Solver::Sudoku_Solver() {
 	
 }

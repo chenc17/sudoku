@@ -15,6 +15,15 @@ using namespace std;
 
 const string Sudoku_Parser::LINE_SEPARATOR = "+=======================+";
 
+//Sudoku_Parser
+//write_sudoku method takes an array of Square objects and prints the value of each Square in proper
+//sudoku grid format to the file specified
+//parseSudoku takes the file given and attempts to parse the sudoku puzzle in the file into
+//an array of Square objects 
+
+//@authors Matt Hino and Christine Chen
+//@date 10/1/2016
+
 int Sudoku_Parser::write_sudoku(Square* puzzle, string fileName) {
 
 	ofstream myfile(fileName);

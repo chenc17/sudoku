@@ -13,8 +13,6 @@
 
 using namespace std;
 
-//destructor? initialize?
-
 
 //Sudoku_Generator
 //A Sudoku_Generator object contains the sudoku grid--an array of Square objects

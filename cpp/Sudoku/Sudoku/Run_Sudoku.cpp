@@ -33,6 +33,13 @@ const string RANDOM = "RANDOM";
 Sudoku_Solver* solver;
 Sudoku_Generator* generator;
 
+//Run_Sudoku
+//The main() method walks the user through the process of creating Sudoku puzzles or solving
+//a puzzle 
+
+//@authors Matt Hino and Christine Chen
+//@date 10/1/2016
+
 // constructor destructor
 Run_Sudoku::Run_Sudoku() {
 	solver = new Sudoku_Solver();
