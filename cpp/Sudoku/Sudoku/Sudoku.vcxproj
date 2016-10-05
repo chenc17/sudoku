@@ -89,6 +89,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Run_Sudoku.cpp" />
     <ClCompile Include="Solver_Test.cpp" />
     <ClCompile Include="Sudoku_Generator_Template.cpp" />
     <ClCompile Include="Square.cpp" />
