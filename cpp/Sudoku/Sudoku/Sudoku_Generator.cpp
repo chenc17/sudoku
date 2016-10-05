@@ -68,15 +68,16 @@ Square* Sudoku_Generator::get_sudoku_puzzle(Level diff)
 	bool success = create_solved_puzzle();
 	if (success)
 	{
-		if (true) //need to change
+		if (check_valid_solved_sudoku_grid()) //need to change
 		{
-			//Sudoku_Generator::create_unsolved_puzzle(diff);
+			Sudoku_Generator::create_unsolved_puzzle(diff);
 			return sudoku_grid;
 		}
 	}
 
-	//deallocate and return NULL?
-	return NULL;
+	//deallocate and return nullptr
+	delete[] sudoku_grid;
+	return nullptr;
 	
 }
 
@@ -193,21 +194,21 @@ void Sudoku_Generator::create_unsolved_puzzle(Level difficulty)
 
 	/*the difficulty level affects the number of squares to remove
 	set that value here*/
-	int num_squares_to_rem = 0;
+	int num_squares_to_rem_total = 0;
 	switch (difficulty)
 	{
-		case Level::easy:
-			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_EASY;
-			break;
-		case Level::medium:
-			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_MED;
-			break;
-		case Level::difficult:
-			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_DIFF;
-			break;
-		default:
-			num_squares_to_rem = Sudoku_Generator::REMOVE_NUM_EASY;
-	
+	case Level::easy:
+		num_squares_to_rem_total = Sudoku_Generator::REMOVE_NUM_EASY;
+		break;
+	case Level::medium:
+		num_squares_to_rem_total = Sudoku_Generator::REMOVE_NUM_MED;
+		break;
+	case Level::difficult:
+		num_squares_to_rem_total = Sudoku_Generator::REMOVE_NUM_DIFF;
+		break;
+	default:
+		num_squares_to_rem_total = Sudoku_Generator::REMOVE_NUM_EASY;
+
 	}
 
 	//almost ready to start clearing squares
@@ -215,214 +216,184 @@ void Sudoku_Generator::create_unsolved_puzzle(Level difficulty)
 
 	//these two arrays keep track of the square number and corresponding value of
 	//squares that are candidates for "clearing" in the event that a backtrack is necessary
-	
+
 	//note that there can only be at most REMOVE_NUM_STAGE_1 candidate squares at a time 
 	//(the number of squares to remove decreases in each subsequent stage)
-	int* square_no_candidates = new int[Sudoku_Generator::REMOVE_NUM_STAGE_1];
-	int* square_value_candidates = new int[Sudoku_Generator::REMOVE_NUM_STAGE_1];
-	
+	int* square_no_candidates = new int[Sudoku_Generator::REMOVE_NUM_LOOP_STAGE_1];
+	int* square_value_candidates = new int[Sudoku_Generator::REMOVE_NUM_LOOP_STAGE_1];
+
 	//get a solver to use in determining that sudoku grid is still solvable after "clearing" squares
 	Sudoku_Solver*solver = new Sudoku_Solver();
-	
+
 	//fills squares set with the square numbers that correspond to squares that still have a value
-	std::set<int> squares_with_val = init_squares(); 
+	std::set<int> squares_with_val = init_squares();
 
 	//FINALLY READY TO START RIPPING AWAY SQUARE VALUES
-	while (current_num_empty_sq<num_squares_to_rem)
+	while (current_num_empty_sq < num_squares_to_rem_total)
 	{
 
 		//make sure the candidate arrays are reset
-		for (int i = 0; i<4; i++)
+		for (int i = 0; i < 4; i++)
 		{
-			square_candidates_num[i] = -1;
-			square_candidates_val[i] = -1;
+			*(square_no_candidates + i) = -1;
+			*(square_value_candidates + i) = -1;
 		}
 
-
-		//the number of squares to attempt to "clear" each time
+		//how many squares should be removed in each pass through the while loop?
 		//depends on the number of currently "cleared" squares
-		if (num_empty_squares<STAGE_2_SQ_REM)
+		int num_to_remove_loop = 0;
+		if (current_num_empty_sq < Sudoku_Generator::STAGE_2_VAL)
 		{
-			//System.out.println("\nIn STAGE 1\n");
-			num_squares_to_clear = REMOVE_SQ_STAGE_1;
+			num_to_remove_loop = Sudoku_Generator::REMOVE_NUM_LOOP_STAGE_1;
 		}
-		else if (num_empty_squares<STAGE_3_SQ_REM)
+		else if (current_num_empty_sq < Sudoku_Generator::STAGE_3_VAL)
 		{
-			//System.out.println("\nIn STAGE 2\n");
-			num_squares_to_clear = REMOVE_SQ_STAGE_2;
+			num_to_remove_loop = Sudoku_Generator::REMOVE_NUM_LOOP_STAGE_2;
 		}
 		else
 		{
-			//System.out.println("\nIn STAGE 3\n");
-			num_squares_to_clear = REMOVE_SQ_STAGE_3;
+			num_to_remove_loop = Sudoku_Generator::REMOVE_NUM_LOOP_STAGE_3;
 		}
 
 
 		//keeps track of how many squares have been selected as candidates
 		int num_squares_selected = 0;
-		while (num_squares_selected<num_squares_to_clear)
+		while (num_squares_selected < num_to_remove_loop)
 		{
 			//get a random square candidate
-			Object[] squares_arr = squares.toArray();
-			int square_no = (int)squares_arr[get_random_idx(squares_arr)];
+			//use an iterator to get a random value from the set of squares that still have values
+			set<int>::const_iterator it(squares_with_val.begin());
+			int rand_adv = get_random_idx(squares_with_val.size());
+			advance(it, rand_adv);
+			int square_rand_no = *it;
+
 			//make sure this square hasn't already been chosen as a candidate
-			if (IntStream.of(square_candidates_num).anyMatch(x->x == square_no))
+			bool dup = false;
+			for (int i = 0; i < Sudoku_Generator::REMOVE_NUM_LOOP_STAGE_1; i++)
+			{
+				if (square_no_candidates[i] == square_rand_no)
+				{
+					dup = true;
+					break;
+				}
+			}
+
+			if (dup == true)
 			{
 				continue;
 			}
 			else
 			{
 				//enter the square and its value into the appropriate arrays
-				square_candidates_num[num_squares_selected] = square_no;
-				square_candidates_val[num_squares_selected] = sudoku_grid[square_no].get_value();
+				*(square_no_candidates + num_squares_selected) = square_rand_no;
+				*(square_value_candidates + num_squares_selected) = (sudoku_grid + square_rand_no)->get_value();
 				num_squares_selected++;
 			}
+		}
+
+		//NOW WE CAN FINALLY TRY TO REMOVE THESE SQUARES...
+
+		//try removing the values for the squares in square_candidates_num and try solving
+		for (int i = 0; i < num_squares_selected; i++)
+		{
+			int square_no = *(square_no_candidates + i);
+			(sudoku_grid + square_no)->set_value(Square::UNKNOWN);
+			(sudoku_grid + square_no)->set_possible_values();
+		}
+
+		//TRY TO SOLVE PUZZLE
+		Square * solved = solver->solve_puzzle(sudoku_grid);
 
 
-	//deallocate square_candidates_num
-	//deallocate solver
+		if (solved == nullptr)
+		{
+			//PUZZLE IS UNSOLVABLE
+			//backtrack and try again
+			for (int i = 0; i<num_squares_selected; i++)
+			{
+				int square_no = *(square_no_candidates + i);
+				int square_val = *(square_value_candidates + i);
+				(sudoku_grid + square_no)->set_value(square_val);
+				(sudoku_grid + square_no)->set_possible_values();
+			}
+
+			if (current_num_empty_sq>Sudoku_Generator::STAGE_3_VAL)
+			{
+				//if we're already in stage 3, just stop
+				break;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		else
+		{
+			//the puzzle is solvable
+			//update num_empty_squares
+			current_num_empty_sq += num_squares_selected;
+
+			//remove the appropriate squares from the squares set
+			for (int i = 0; i < num_squares_selected; i++)
+			{
+				squares_with_val.erase(*(square_no_candidates + i));
+			}
+
+			//since the solver solved the puzzle, need to reinstate the blanks for the next round
+			for (int i = 0; i < Square::TOTAL_NUM_SQ; i++)
+			{
+				//send iterator to location of i in squares_with_val set
+				//if i cannot be found, find returns an iterator to set::end.
+
+				if (squares_with_val.find(i) == squares_with_val.end())
+				{
+					(sudoku_grid + i)->set_value(Square::UNKNOWN);
+					(sudoku_grid + i)->set_possible_values();
+				}
+			}
+		}
+	}
+
+	delete[]square_no_candidates;
+	delete[]square_value_candidates;
+	delete solver;
 }
+
+		
+
+
+
+
 //returns an array containing the numbers 0 up to but not including Square::TOTAL_NUM_SQ
 std::set<int> Sudoku_Generator::init_squares()
 {
-	
+
 	std::set<int> square_nums;
-	
-	for (int i = 0; i<Square::TOTAL_NUM_SQ; i++)
+
+	for (int i = 0; i < Square::TOTAL_NUM_SQ; i++)
 	{
 		square_nums.insert(i);
 	}
-	
+
 	return square_nums;
-	
-	
+
+
 }
 
-//
-//		while (num_empty_squares<stop_at_num_empty_squares)
-//		{
-//
-//			//make sure the arrays are reset
-//			for (int i = 0; i<4; i++)
-//			{
-//				square_candidates_num[i] = -1;
-//				square_candidates_val[i] = -1;
-//			}
-//
-//
-//			//the number of squares to attempt to "clear" each time
-//			//depends on the number of currently "cleared" squares
-//			if (num_empty_squares<STAGE_2_SQ_REM)
-//			{
-//				//System.out.println("\nIn STAGE 1\n");
-//				num_squares_to_clear = REMOVE_SQ_STAGE_1;
-//			}
-//			else if (num_empty_squares<STAGE_3_SQ_REM)
-//			{
-//				//System.out.println("\nIn STAGE 2\n");
-//				num_squares_to_clear = REMOVE_SQ_STAGE_2;
-//			}
-//			else
-//			{
-//				//System.out.println("\nIn STAGE 3\n");
-//				num_squares_to_clear = REMOVE_SQ_STAGE_3;
-//			}
-//
-//
-//			//keeps track of how many squares have been selected as candidates
-//			int num_squares_selected = 0;
-//			while (num_squares_selected<num_squares_to_clear)
-//			{
-//				//get a random square candidate
-//				Object[] squares_arr = squares.toArray();
-//				int square_no = (int)squares_arr[get_random_idx(squares_arr)];
-//				//make sure this square hasn't already been chosen as a candidate
-//				if (IntStream.of(square_candidates_num).anyMatch(x->x == square_no))
-//				{
-//					continue;
-//				}
-//				else
-//				{
-//					//enter the square and its value into the appropriate arrays
-//					square_candidates_num[num_squares_selected] = square_no;
-//					square_candidates_val[num_squares_selected] = sudoku_grid[square_no].get_value();
-//					num_squares_selected++;
-//				}
-//
-//
-//			}
-//
-//			//try removing the values for the squares in square_candidates_num and try solving
-//			for (int i = 0; i<num_squares_selected; i++)
-//			{
-//				sudoku_grid[square_candidates_num[i]].set_value(Square.UNKNOWN);
-//				sudoku_grid[square_candidates_num[i]].reset_possible_values();
-//			}
-//
-//			//System.out.println("CANDIDATE!");
-//			//print_sudoku_puzzle();
-//			//System.out.println();
-//
-//			Optional<Square[]> solved = solver.solve_puzzle(sudoku_grid);
-//			//System.out.println("After Attempted Solve!");
-//			//print_sudoku_puzzle();
-//			//System.out.println();
-//
-//			if (!(solved.isPresent()))
-//			{
-//				//PUZZLE IS UNSOLVABLE
-//				//backtrack and try again
-//				for (int i = 0; i<num_squares_selected; i++)
-//				{
-//					sudoku_grid[square_candidates_num[i]].set_value(square_candidates_val[i]);
-//					sudoku_grid[square_candidates_num[i]].reset_possible_values();
-//				}
-//
-//				if (num_empty_squares>STAGE_3_SQ_REM)
-//				{
-//					//if we're already in stage 3, just stop
-//					break;
-//				}
-//				else
-//				{
-//					//System.out.println("---------------------------------------------");
-//					continue;
-//				}
-//
-//			}
-//			else
-//			{
-//				//the puzzle is solvable
-//				//update num_empty_squares
-//				num_empty_squares = num_empty_squares + num_squares_selected;
-//
-//				//remove the appropriate squares from the squares set
-//				for (int i = 0; i<num_squares_selected; i++)
-//				{
-//					squares.remove(square_candidates_num[i]);
-//				}
-//
-//				//since the solver solved the puzzle, need to reinstate the blanks for the next Round
-//				for (int i = 0; i<Square.NUM_SQUARES; i++)
-//				{
-//					if (!squares.contains(i))
-//					{
-//						sudoku_grid[i].set_value(Square.UNKNOWN);
-//						sudoku_grid[i].reset_possible_values();
-//					}
-//				}
-//
-//				//System.out.println("Round Completed!");
-//				//print_sudoku_puzzle();
-//				//System.out.println();
-//				//System.out.println("---------------------------------------------");
-//
-//			}
-//
-//
-//
-//		}
-//
-//		//System.out.println ("NUMBER OF SQUARES REMOVED " + num_empty_squares + "\n");
-//
-//	}
+//verifies that sudoku_grid is actually fully solved without any conflicts
+//this method should be called after create_solved_puzzle() does its work on sudoku_grid
+bool Sudoku_Generator::check_valid_solved_sudoku_grid()
+{
+	bool conflict = false;
+	for (int i = 0; i<Square::TOTAL_NUM_SQ; i++)
+	{
+		conflict = this->check_for_conflict(i);
+		if (conflict == true){ return false; }
+	}
+
+	return true;
+}
+
+
+
+

@@ -20,6 +20,7 @@ private:
 	int get_random_idx(int len_array);
 	bool check_for_conflict(int sq_num);
 	std::set<int> init_squares();
+	bool check_valid_solved_sudoku_grid();
 	
 public:
 	Sudoku_Generator();
@@ -31,11 +32,11 @@ public:
 
 	//constants
 	//these constants help with removing squares from a solved sudoku
-	static const int REMOVE_NUM_STAGE_1 = 4; //remove 4 squares at a time in the first stage
+	static const int REMOVE_NUM_LOOP_STAGE_1 = 4; //remove 4 squares each pass through the while loop in the first stage
 	static const int STAGE_2_VAL = 20; //start the second stage after 20 squares have been removed
-	static const int REMOVE_NUM_STAGE_2 = 2;
+	static const int REMOVE_NUM_LOOP_STAGE_2 = 2;
 	static const int STAGE_3_VAL = 40;
-	static const int REMOVE_NUM_STAGE_3 = 1;
+	static const int REMOVE_NUM_LOOP_STAGE_3 = 1;
 
 	//how many squares should be removed for each difficulty level
 	static const int REMOVE_NUM_EASY = 41; //40 left
