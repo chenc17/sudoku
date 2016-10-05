@@ -90,11 +90,13 @@ Square* Sudoku_Solver::copy_puzzle(Square* original) {
 bool Sudoku_Solver::has_conflict(Square* puzzle, int puzzle_length, int square_no, int new_value) {
 	Square oldSquare = *(puzzle + square_no);
 	for (int i = 0; i< puzzle_length; i++){
-		if ((puzzle + i) -> get_column() == oldSquare.get_column() ||
-			(puzzle + i) -> get_row() == oldSquare.get_row() ||
-			(puzzle + i) -> get_region() == oldSquare.get_region()) {
-			if( (puzzle + i) -> get_value() == new_value) {
-				return true; // conflict
+		if (i != square_no) {
+			if ((puzzle + i)->get_column() == oldSquare.get_column() ||
+				(puzzle + i)->get_row() == oldSquare.get_row() ||
+				(puzzle + i)->get_region() == oldSquare.get_region()) {
+				if ((puzzle + i)->get_value() == new_value) {
+					return true; // conflict
+				}
 			}
 		}
 	}

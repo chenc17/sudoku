@@ -45,7 +45,7 @@ Run_Sudoku::~Run_Sudoku() {
 }
 
 int Run_Sudoku::main() {
-	Run_Sudoku* runner = new Run_Sudoku();
+	Run_Sudoku * runner = new Run_Sudoku();
 	bool do_again = false;
 
 	// welcome user to the program, describe the functionality
@@ -215,6 +215,7 @@ void Run_Sudoku::solve_puzzle(string file) {
 	Square* unsolved_puzzle = Sudoku_Parser::parseSudoku(file);
 	if (unsolved_puzzle == nullptr) {
 		cout << "Next time please enter a valid file name" << endl;
+		return;
 	}
 
 	Square* solved = solver->solve_puzzle(unsolved_puzzle);
@@ -222,6 +223,7 @@ void Run_Sudoku::solve_puzzle(string file) {
 		cout << "Unable to solve puzzle!" << endl;
 	} else{
 		string solution_file = get_solution_filename(file);
+		
 		Sudoku_Parser::write_sudoku(solved, solution_file);
 		cout << "Solved puzzle! See: " << solution_file << endl;
 	}
@@ -232,8 +234,8 @@ bool Run_Sudoku::create_puzzles(int num_puzzles, Level level) {
 	const char solution_path[] = "./solutions";
 
 	// create directories to hold the puzzles and solutions.
-	if (create_folder(puzzle_path) != 0) return false;
-	if (create_folder(solution_path) !=0) return false;
+	if (create_folder(puzzle_path) == false) return false;
+	if (create_folder(solution_path) == false) return false;
 
 	// now create the puzzles and solutions. save them to 
 	// appropriate folders.
@@ -253,7 +255,8 @@ bool Run_Sudoku::create_puzzles(int num_puzzles, Level level) {
 				int result_p = Sudoku_Parser::write_sudoku(puzzle, puzzle_name);
 				int result_s = Sudoku_Parser::write_sudoku(solved, solution_name);
 
-				if (result_p == result_s == 0) {
+				if (result_p == 0 && result_s == 0) {
+					cout << "Created puzzle " << to_string(i + 1) << " of " << to_string(num_puzzles) << "." << endl;
 					i++; // only increment if we can find a solution
 				}
 			}
