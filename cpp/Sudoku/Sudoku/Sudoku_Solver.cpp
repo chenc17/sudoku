@@ -21,12 +21,12 @@ Square* Sudoku_Solver::solve_puzzle(Square* unsolved_puzzle) {
 	}
 
 	// create a copy of the passed in puzzle
-	// Square* copy = Sudoku_Solver::copy_puzzle(unsolved_puzzle);
+	Square* copy = Sudoku_Solver::copy_puzzle(unsolved_puzzle);
 	
 	// try and find a solution to the puzzle
-	Square* solved_puzzle = Sudoku_Solver::backtracking_solver(unsolved_puzzle);
+	Sudoku_Solver::backtracking_solver(copy);
 
-	return solved_puzzle;
+	return copy;
 }
 
 Square* Sudoku_Solver::backtracking_solver(Square* puzzle) {
@@ -76,7 +76,16 @@ int Sudoku_Solver::get_first_unknown(Square* puzzle, int size) {
 	return -1;
 }
 
-Square* copyPuzzle(Square* original);
+Square* Sudoku_Solver::copy_puzzle(Square* original) {
+	Square* copy = new Square[Square::TOTAL_NUM_SQ];
+
+	for (int i = 0; i < Square::TOTAL_NUM_SQ; i++) {
+		int val = (original + i)->get_value();
+		*(copy + i) = Square::Square(i, val);
+	}
+
+	return copy;
+}
 
 bool Sudoku_Solver::has_conflict(Square* puzzle, int puzzle_length, int square_no, int new_value) {
 	Square oldSquare = *(puzzle + square_no);

@@ -60,7 +60,7 @@ int Run_Sudoku::main() {
 			// get the information from the user
 			int num_to_create = runner->get_num_puzzles();
 			Level difficulty = runner->get_puzzle_level();
-			cout << "Creating " << num_to_create << "puzzles of " << difficulty << " difficulty" << endl;
+			cout << "Creating " << num_to_create << " puzzles of " << difficulty << " difficulty" << endl;
 
 			// create the puzzles and let the user know the result.
 			bool status = runner->create_puzzles(num_to_create, difficulty);
@@ -162,9 +162,11 @@ Level Run_Sudoku::get_puzzle_level(void) {
 	getline(cin, difficulty);
 	transform(difficulty.begin(), difficulty.end(), difficulty.begin(), toupper);
 
+	cout << difficulty << endl;
+
 	Level lvl = Run_Sudoku::string_to_level(difficulty);
 
-	while (lvl != none) {
+	while (lvl == none) {
 		handle_invalid_response(difficulty, "'easy', 'medium', 'difficult', or 'random'?");
 		getline(cin, difficulty);
 		transform(difficulty.begin(), difficulty.end(), difficulty.begin(), toupper);
@@ -194,7 +196,7 @@ bool Run_Sudoku::ask_run_again(void) {
 
 	transform(response.begin(), response.end(), response.begin(), toupper);
 
-	while (YES.compare(response) != 0 || NO.compare(response) != 0) {
+	while (YES.compare(response) != 0 && NO.compare(response) != 0) {
 		handle_invalid_response(response, "'" + YES + "' or '" + NO + "'");
 		getline(cin, response);
 		transform(response.begin(), response.end(), response.begin(), toupper);
@@ -300,12 +302,11 @@ Level Run_Sudoku::string_to_level(string lvl) {
 }
 
 void Run_Sudoku::handle_invalid_response(string invalid_response, string valid_response) {
-	cout << "Sorry, " + invalid_response + "' is not a valid response." << endl;
+	cout << "Sorry, '" + invalid_response + "' is not a valid response." << endl;
 	cout << "Please enter one of the following: " << endl;
 	cout << valid_response << endl;
 }
 
 string Run_Sudoku::get_solution_filename(string original) {
-	original.substr(0, original.find_last_of("."));
-	return original;
+	return original + "_solved.txt";
 }
