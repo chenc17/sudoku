@@ -16,12 +16,15 @@
 (defconstant POS_SQ_NUM 4)
 (defconstant POS_POSS_VALS 5)
 
+(defconstant MED_LEVEL 50)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun generator ()
-
-	(pretty_print_grid (create_solved (add_blank_square (1- TOTAL_NUM_SQ) ()) 0) ))
-
+	(let ((solved_grid (create_solved (add_blank_square (1- TOTAL_NUM_SQ) ()) 0)))
+		(pretty_print_grid solved_grid)
+		(format t "~%")
+		(pretty_print_grid (create_unsolved solved_grid MED_LEVEL))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun create_blank_square (sq_num val)
@@ -123,7 +126,7 @@
 				(return-from create_solved (create_solved sudoku_grid (1+ sq_num))))
 
 		(dolist (poss_val (get_possible_values sudoku_grid sq_num))
-				(format t "Square ~D: ~D~%" sq_num poss_val)
+				;(format t "Square ~D: ~D~%" sq_num poss_val)
 				(if (valid sudoku_grid sq_num poss_val)
 						(progn
 							(setf sudoku_grid (set_value sudoku_grid sq_num poss_val))
@@ -133,6 +136,43 @@
 							(setf sudoku_grid (set_value sudoku_grid sq_num UNKNOWN))))
 
 		(return-from create_solved NIL))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun create_unsolved (solved_sudoku_grid num_to_remove)
+	(let ((candidates (range 81))
+				(squares_to_remove ())
+				(removed_grid solved_sudoku_grid)
+				(new_sq 0))
+
+	;(format t "Before loop!~%")
+	(loop
+
+		;get the index of the square to remove from candidates
+		(setf new_sq (get_rand candidates))
+
+		;remove that value from candidates
+		(setf candidates (remove new_sq candidates))
+
+		(setf squares_to_remove (CONS new_sq squares_to_remove))
+
+		(setf removed_grid (set_unknown solved_sudoku_grid squares_to_remove))
+
+		(if (not (create_solved removed_grid 0))
+			(setf squares_to_remove (CDR squares_to_remove)))
+
+		(when (or (>= (list-length squares_to_remove) num_to_remove)
+					(= (list-length candidates) 0))
+		(return-from create_unsolved (set_unknown solved_sudoku_grid squares_to_remove))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun get_rand (values)
+	(return-from get_rand (CAR (SHUFFLE values))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun set_unknown (sudoku_grid squares_to_remove)
+	(dolist (sq_num squares_to_remove)
+		(setf sudoku_grid (set_value sudoku_grid sq_num UNKNOWN)))
+	(return-from set_unknown sudoku_grid))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun get_square_val (sudoku_grid sq_num)
@@ -172,6 +212,12 @@
 				(setf (nth POS_VAL tmp_sq) val)
 				(setf (nth sq_num sudoku_grid) tmp_sq)
 				(return-from set_value sudoku_grid)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;courtesy of http://stackoverflow.com/questions/13937520/pythons-range-analog-in-common-lisp
+(defun range (max &optional (min 0) (step 1))
+   (loop for n from min below max by step
+      collect n))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun pretty_print_grid (sudoku_grid)
