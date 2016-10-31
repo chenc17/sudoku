@@ -51,7 +51,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 (defun validate (sq_num val)
 
 	(if (and (< sq_num TOTAL_NUM_SQ)
@@ -72,6 +71,7 @@
 	(return-from get_col_idx (mod sq_num NUM_SQ_ROW_COL)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; return the region of a square based on it's row and column.
 
 (defun get_reg_row_col (row col)
 	(let ((row_region 0) (col_region 0))
@@ -86,24 +86,20 @@
 
 	(return-from get_reg_row_col (+ (* 3 row_region) col_region))))
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; return a shuffled list of possible values (1-9) each square could be.
 
 (defun set_possible_vals ()
-	;shuffle to eliminate the need to select a random element from the list
 	(return-from set_possible_vals (SHUFFLE (list 1 2 3 4 5 6 7 8 9))))
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Returns a random permutation of the list
+;Example:
+;(shuffle '(1 2 3 4 5 6 7 8 9 10))
+;=> (2 8 5 1 7 3 10 6 4 9)
+;;From http://computer-programming-forum.com/50-lisp/2ff7fc6d728e6fd3.htm
 
 (defun SHUFFLE (list)
-  ;Returns a random permutation of the list
-  ;Example:
-  ;(shuffle '(1 2 3 4 5 6 7 8 9 10))
-  ;=> (2 8 5 1 7 3 10 6 4 9)
-
-  ;; This algorithm may be thought of as stacking cards pulled randomly from
-  ;;a deck.  As such it is easy to see it is unbiased.
-	;;From http://computer-programming-forum.com/50-lisp/2ff7fc6d728e6fd3.htm
-
   (let ((vector (coerce list 'simple-vector)))
     (loop for i fixnum from (length vector) downto 2
 					;rotatef modifies by rotating values from one place into another
@@ -138,6 +134,13 @@
 		(return-from create_solved NIL))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; takes a *solved_sudoku_grid* - one that is fully populated - and
+; sets *num_to_remove* squares to an unknown value. first we try
+; and remove an element from a list, then we ensure that the puzzle
+; is still solvable. if it is solvable, then continue on, otherwise
+; reset the element and try again.
+; returns a sudoku_grid that contains *num_to_remove* squares with unknown values.
+
 (defun create_unsolved (solved_sudoku_grid num_to_remove)
 	(let ((candidates (range 81))
 				(squares_to_remove ())
@@ -165,21 +168,29 @@
 		(return-from create_unsolved (set_unknown solved_sudoku_grid squares_to_remove))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; gets a random element from a list called *values*
+
 (defun get_rand (values)
 	(return-from get_rand (CAR (SHUFFLE values))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; sets the value of the square at list position *sq_num* in the *sudoku_grid* to unknown (0)
+
 (defun set_unknown (sudoku_grid squares_to_remove)
 	(dolist (sq_num squares_to_remove)
 		(setf sudoku_grid (set_value sudoku_grid sq_num UNKNOWN)))
 	(return-from set_unknown sudoku_grid))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; gets the value of square at list position *sq_num* in the *sudoku_grid*
+
 (defun get_square_val (sudoku_grid sq_num)
 		(let ((square (nth sq_num sudoku_grid)))
 			(return-from get_square_val (nth POS_VAL square))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; gets the list of possible values a square could have
+
 (defun get_possible_values (sudoku_grid sq_num)
 		(let ((square (nth sq_num sudoku_grid)))
 			(return-from get_possible_values (nth POS_POSS_VALS square))))
@@ -207,6 +218,8 @@
 				(return-from valid t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; sets sudoku_grid[sq_num] = val and returns the newly modified grid
+
 (defun set_value (sudoku_grid sq_num val)
 		(let ((tmp_sq (nth sq_num sudoku_grid)))
 				(setf (nth POS_VAL tmp_sq) val)
@@ -215,13 +228,18 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;courtesy of http://stackoverflow.com/questions/13937520/pythons-range-analog-in-common-lisp
+; creates an list that starts at min and increments by step, up until max
 (defun range (max &optional (min 0) (step 1))
    (loop for n from min below max by step
       collect n))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; prints the grid in a human readable format for testing.
+
 (defun pretty_print_grid (sudoku_grid)
 	(dolist (square sudoku_grid)
 			(if (= (mod (nth POS_SQ_NUM square) 9) 0)
 					(format t "~%"))
 			(format t "~D " (nth POS_VAL square))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
