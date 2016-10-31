@@ -18,13 +18,30 @@
 
 (defconstant MED_LEVEL 50)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defconstant IO_VALUES '(- 1 2 3 4 5 6 7 8 9))
 
-(defun generator ()
-	(let ((solved_grid (create_solved (add_blank_square (1- TOTAL_NUM_SQ) ()) 0)))
-		(pretty_print_grid solved_grid)
-		(format t "~%")
-		(pretty_print_grid (create_unsolved solved_grid MED_LEVEL))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun generate_puzzles (num_puzzles full_path)
+	(loop for i from 1 to num_puzzles do (generator full_path i)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun generator (full_path puzzle_id)
+	(let* ((solved_grid (create_solved (add_blank_square (1- TOTAL_NUM_SQ) ()) 0)))
+		(write_grid_to_file solved_grid
+			(concatenate 'string	full_path
+														"/solutions/puzzle"
+														(write-to-string puzzle_id)
+														".txt"))
+
+		;; now 'unsolve' the puzzle and create a file with unsolved version
+		(setf solved_grid (create_unsolved solved_grid MED_LEVEL))
+		(write_grid_to_file solved_grid
+			(concatenate 'string	full_path
+														"/puzzles/puzzle"
+														(write-to-string puzzle_id)
+														".txt"))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun create_blank_square (sq_num val)
@@ -243,3 +260,34 @@
 			(format t "~D " (nth POS_VAL square))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; writes the grid in a human readable format.
+
+(defun write_grid_to_file (sudoku_grid filename)
+	(with-open-file (str filename
+	                     :direction :output
+	                     :if-exists :supersede
+	                     :if-does-not-exist :create)
+		(dolist (square sudoku_grid)
+				(if (and (not (= (nth POS_SQ_NUM square) 0))
+						     (= (mod (nth POS_SQ_NUM square) 9) 0))
+						(format str "|~%"))
+				(if (= (mod (nth POS_SQ_NUM square) 27) 0)
+						(format str "+=======================+~%"))
+				(if (= (mod (nth POS_SQ_NUM square) 3) 0)
+						(format str "| "))
+				(if (= (nth POS_VAL square) 0)
+					(format str "- ")
+					(format str "~D " (nth POS_VAL square))))
+		(format str "|~%+=======================+~%")))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; (let ((in (open "/Users/matthino/GitHub/sudoku/test_puzzle.txt" :if-does-not-exist (format t "couldn't find file~%"))))
+;  (when in
+;    (loop for line = (read-line in nil)
+;         while line do (
+;				 		loop for i from 0 to (1- (array-total-size line)) do (
+;							format t "~a" (aref line i)))))
+;							;setf my-list (cons (aref line i) my-list)))))
+;    (close in))
