@@ -18,7 +18,7 @@
 
 (defconstant MED_LEVEL 50)
 
-(defconstant IO_VALUES '(- 1 2 3 4 5 6 7 8 9))
+(defconstant IO_VALUES '(#\- #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun generate_puzzles (num_puzzles full_path)
@@ -283,11 +283,17 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; (let ((in (open "/Users/matthino/GitHub/sudoku/test_puzzle.txt" :if-does-not-exist (format t "couldn't find file~%"))))
-;  (when in
-;    (loop for line = (read-line in nil)
-;         while line do (
-;				 		loop for i from 0 to (1- (array-total-size line)) do (
-;							format t "~a" (aref line i)))))
-;							;setf my-list (cons (aref line i) my-list)))))
-;    (close in))
+(defun read_sudoku_file (path)
+	(let ((myList ()))
+	   (with-open-file (stream path)
+	       (do ((char (read-char stream nil)
+	                  (read-char stream nil)))
+	           ((null char))
+	           (if (member char IO_VALUES) (setq myList (CONS (char_to_num char) myList)))))
+	    (return-from read_sudoku_file myList)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun char_to_num (char)
+  (if (CHAR= char #\-)
+    (return-from char_to_num 0))
+  (return-from char_to_num (digit-char-p char)))
