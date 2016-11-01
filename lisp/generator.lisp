@@ -43,6 +43,22 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun solve_puzzle (path)
+	(let* ((init_list (read_sudoku_file path))
+				(init_puzzle (initialize_grid init_list)))
+
+				(format t "~a~%" init_list)
+				(pretty_print_grid init_puzzle)
+				(pretty_print_grid (create_solved init_puzzle 0))
+
+				 ;; write the solution to
+				 (write_grid_to_file (create_solved init_puzzle 0)
+	 				(concatenate 'string	path
+	 															"puzzle_solution"
+	 															(write-to-string 777)
+	 															".txt"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun create_blank_square (sq_num val)
 
@@ -290,10 +306,18 @@
 	                  (read-char stream nil)))
 	           ((null char))
 	           (if (member char IO_VALUES) (setq myList (CONS (char_to_num char) myList)))))
-	    (return-from read_sudoku_file myList)))
+	    (return-from read_sudoku_file (nreverse myList))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun char_to_num (char)
   (if (CHAR= char #\-)
     (return-from char_to_num 0))
   (return-from char_to_num (digit-char-p char)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun initialize_grid (initialize_list)
+	(let ((sudoku_grid (add_blank_square (1- TOTAL_NUM_SQ) ())))
+		(loop for i from 0 to (1- (list-length initialize_list))
+			do (setf sudoku_grid (set_value sudoku_grid i (nth i initialize_list))))
+
+		(return-from initialize_grid sudoku_grid)))
