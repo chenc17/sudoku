@@ -72,7 +72,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun add_blank_square(n intermediate)
+(defun add_blank_square (n intermediate)
 	(if (< n 0)
 	(return-from add_blank_square intermediate))
 
@@ -155,14 +155,13 @@
 				(return-from create_solved (create_solved sudoku_grid (1+ sq_num))))
 
 		(dolist (poss_val (get_possible_values sudoku_grid sq_num))
-				;(format t "Square ~D: ~D~%" sq_num poss_val)
 				(if (valid sudoku_grid sq_num poss_val)
 						(progn
 							(setf sudoku_grid (set_value sudoku_grid sq_num poss_val))
 							(let ((tmp_puzzle (create_solved sudoku_grid (1+ sq_num))))
 									(if tmp_puzzle
-										(return-from create_solved tmp_puzzle))))
-							(setf sudoku_grid (set_value sudoku_grid sq_num UNKNOWN))))
+										(return-from create_solved tmp_puzzle)))))
+				(setf sudoku_grid (set_value sudoku_grid sq_num UNKNOWN)))
 
 		(return-from create_solved NIL))
 
@@ -283,6 +282,11 @@
 	                     :direction :output
 	                     :if-exists :supersede
 	                     :if-does-not-exist :create)
+		(if (not sudoku_grid)
+			(progn
+				(format str "Unable to find a solution :|")
+				(return-from write_grid_to_file)))
+
 		(dolist (square sudoku_grid)
 				(if (and (not (= (nth POS_SQ_NUM square) 0))
 						     (= (mod (nth POS_SQ_NUM square) 9) 0))
