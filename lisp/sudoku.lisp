@@ -64,8 +64,7 @@
 				 ;; write the solution to
 				 (write_grid_to_file (create_solved init_puzzle 0)
 	 				(concatenate 'string	path
-	 															"puzzle_solution"
-	 															(write-to-string 777)
+	 															"_solution"
 	 															".txt"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

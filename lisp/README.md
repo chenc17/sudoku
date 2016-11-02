@@ -1,31 +1,63 @@
-README
-This file contains information on how to generate or solve sudoku puzzles using the LISP programming language. Note that all code is in sudoku.lisp.
+## Synopsis:
 
-GENERATING PUZZLES
-->Load sudoku.lisp using the correct path to the sudoku.lisp file 
-i.e. (load “…Desktop/Sudoku/lisp/sudoku.lisp”)
-->Call generate_puzzles with the number of puzzles you would like to create and the path to the location where the puzzles should be stored
-i.e. (generate_puzzles 10 "…/Desktop/puzzles_folder/")
-->The unsolved puzzles will be stored in one folder and the solved puzzles will be stored in another folder within the puzzles_folder (using the example above)
+This file contains information on how to generate or solve sudoku puzzles using the LISP programming language. Note that all code is in the file: sudoku.lisp.
 
-SOLVING PUZZLES
-->Load sudoku.lisp
-->Call solve_puzzle with the path to the file that contains the sudoku puzzle to be solved
-(solve_puzzle "…/Desktop/puzzles/puzzles/puzzle1.txt")
-->A file containing the solved puzzle will be placed in the same folder as the puzzle that was passed in to be solved
+In order to run the code, first load the program. Be sure to use the __*full path*__ to the file.
 
-IMPORTANT METHODS
+i.e. (load “/Users/username/Desktop/Sudoku/lisp/sudoku.lisp”)
 
-(defun create_solved (sudoku_grid sq_num)…
-Description: Takes in sudoku_grid structure and the square to start at. Utilizes recursion to solve puzzle and returns solved sudoku grid.
+## How to generate puzzles:
 
-(defun create_unsolved (solved_sudoku_grid num_to_remove)…
-Description: Turns a solved sudoku grid into an unsolved sudoku grid by removing a certain number of squares (specified by num_to_remove). 
+#### Usage: (generate\_puzzles N path)
 
-(defun read_sudoku_file (path)…
-Description: reads in the file holding the sudoku puzzle (specified by path) character by character. If the character is in the IO_VALUES list (list of sudoku grid values that can appear in a valid sudoku puzzle file), it gets put into a list that is eventually returned. The values in the list correspond to values in a sudoku grid.
+**Parameters:**
 
-(defun write_grid_to_file (sudoku_grid filename)…
-Description: writes the grid in human readable format
+* N - the number of puzzles you would like to generate\_puzzles
+* path - the full path to where you would like the puzzles and their solutions to be saved
 
+*Note: If you passed in ".../Desktop", then the program will create two directories ".../Desktop/puzzles" and ".../Desktop/solutions" and save the puzzles and their solutions.*
 
+## How to solve a puzzle:
+
+#### Usage: (solve\_puzzle path)
+
+**Parameters:**
+
+* path - the full path to where you would like the puzzles and their solutions to be saved
+
+*Note: If you passed in ".../Desktop/puzzle1.txt" as the path, then the program will try and find a solution to puzzle1.txt. It will then create a file at ".../Desktop/puzzle1.txt\_solution.txt" that contains the solution to the puzzle (if one exists).*
+
+## Important Methods:
+
+Below, you'll find descriptions for some of the more complex methods being used in the program. If you are just trying to create or solve sudoku puzzles, the following methods are not necessary to understand.
+
+#### Usage: (create\_solved sudoku\_grid sq\_num)
+
+**Description:** Takes in sudoku_grid structure and the square to start at. Utilizes recursion to solve puzzle and returns solved sudoku grid.
+
+**Parameters:**
+
+* sudoku\_grid - our representaion of a sudoku puzzle
+* sq\_num - the current square we are evaluating
+
+#### Usage: (create\_unsolved solved\_sudoku\_grid num\_to\_remove)
+
+**Description:** Turns a solved sudoku grid into an unsolved sudoku grid by removing a certain number of squares (specified by num\_to\_remove).
+
+**Parameters:**
+
+* sudoku\_grid - our representation of a sudoku puzzle
+* num\_to\_remove - the number of unknown squares you would like to have
+
+#### Usage: (read\_sudoku\_file path)
+
+**Description:** reads in the file holding the sudoku puzzle (specified by path) character by character. If the character is in the IO_VALUES list (list of sudoku grid values that can appear in a valid sudoku puzzle file), it gets put into a list that is eventually returned. The values in the list correspond to values in a sudoku grid.
+
+#### Usage: (write\_grid\_to\_file sudoku\_grid filename)
+
+**Description:** writes the grid in human readable format
+
+**Parameters:**
+
+* sudoku_grid - our representation of a sudoku puzzle
+* filename - the *full path* of where the puzzle should be written
