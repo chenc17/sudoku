@@ -47,9 +47,10 @@
 	(let* ((init_list (read_sudoku_file path))
 				(init_puzzle (initialize_grid init_list)))
 
-				(format t "~a~%" init_list)
-				(pretty_print_grid init_puzzle)
-				(pretty_print_grid (create_solved init_puzzle 0))
+				; for debugging
+				;(format t "~a~%" init_list)
+				;(pretty_print_grid init_puzzle)
+				;(pretty_print_grid (create_solved init_puzzle 0))
 
 				 ;; write the solution to
 				 (write_grid_to_file (create_solved init_puzzle 0)
