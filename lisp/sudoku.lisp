@@ -21,10 +21,15 @@
 (defconstant IO_VALUES '(#\- #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;generates puzzles and their solutions
+;location of puzzles/solutions specified by full_path
+
 (defun generate_puzzles (num_puzzles full_path)
 	(loop for i from 1 to num_puzzles do (generator full_path i)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;helper function for generate puzzles that does all the grunt worker
+
 (defun generator (full_path puzzle_id)
 	(let* ((solved_grid (create_solved (add_blank_square (1- TOTAL_NUM_SQ) ()) 0)))
 		(write_grid_to_file solved_grid
@@ -43,6 +48,10 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;parses the contents of the sudoku file specified by path
+;initializes a sudoku_puzzle structure to correspond to the sudoku file
+;solves the puzzle and writes the result to a file
+
 (defun solve_puzzle (path)
 	(let* ((init_list (read_sudoku_file path))
 				(init_puzzle (initialize_grid init_list)))
@@ -60,6 +69,7 @@
 	 															".txt"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;makes a blank square with number and value as specified by parameters
 
 (defun create_blank_square (sq_num val)
 
@@ -72,6 +82,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;creates a list of blank n+1 blank squares (with square numbers 0 through n)
 
 (defun add_blank_square (n intermediate)
 	(if (< n 0)
@@ -84,6 +95,7 @@
 	(add_blank_square (1- n) (CONS (create_blank_square n UNKNOWN) intermediate)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;sanity check on sq_num and value (make sure within bounds)
 
 (defun validate (sq_num val)
 
@@ -95,17 +107,19 @@
 	nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;get row of square with square number = sq_num
 
 (defun get_row_idx (sq_num)
 	(return-from get_row_idx (floor sq_num NUM_SQ_ROW_COL)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;get column of square with square number = sq_num
 
 (defun get_col_idx (sq_num)
 	(return-from get_col_idx (mod sq_num NUM_SQ_ROW_COL)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; return the region of a square based on it's row and column.
+;return the region of a square based on it's row and column.
 
 (defun get_reg_row_col (row col)
 	(let ((row_region 0) (col_region 0))
@@ -121,7 +135,7 @@
 	(return-from get_reg_row_col (+ (* 3 row_region) col_region))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; return a shuffled list of possible values (1-9) each square could be.
+;return a shuffled list of possible values (1-9) each square could be
 
 (defun set_possible_vals ()
 	(return-from set_possible_vals (SHUFFLE (list 1 2 3 4 5 6 7 8 9))))
@@ -145,6 +159,9 @@
     ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;takes in sudoku_grid structure and the square to start at
+;returns solved sudoku grid
+
 (defun create_solved (sudoku_grid sq_num)
 		;; base case: got to the end of the square list
 		(if (>= sq_num TOTAL_NUM_SQ)
@@ -261,7 +278,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;courtesy of http://stackoverflow.com/questions/13937520/pythons-range-analog-in-common-lisp
-; creates an list that starts at min and increments by step, up until max
+; creates a list that starts at min and increments by step, up until max
 (defun range (max &optional (min 0) (step 1))
    (loop for n from min below max by step
       collect n))
@@ -304,6 +321,10 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;reads in the file holding the sudoku puzzle (specified by path) character by character
+;if the character is in the IO_VALUES list, it gets put into a list that is eventually returned
+;the values in the list correspond to the values in the sudoku grid squares
+
 (defun read_sudoku_file (path)
 	(let ((myList ()))
 	   (with-open-file (stream path)
@@ -314,12 +335,16 @@
 	    (return-from read_sudoku_file (nreverse myList))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;converts a character to a number
+
 (defun char_to_num (char)
   (if (CHAR= char #\-)
     (return-from char_to_num 0))
   (return-from char_to_num (digit-char-p char)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;takes a list of numbers and uses it to initialize a sudoku grid
+
 (defun initialize_grid (initialize_list)
 	(let ((sudoku_grid (add_blank_square (1- TOTAL_NUM_SQ) ())))
 		(loop for i from 0 to (1- (list-length initialize_list))
