@@ -1,7 +1,12 @@
-
-
 /*http://www.swi-prolog.org/pldoc/man?predicate=transpose/2*/
 :- use_module(library(clpfd)).
+:- consult(sudokuIO).
+
+/* main program */
+solve(FileName) :-
+  fileToPuzzle(FileName, Rows),
+  sudoku(Rows),
+  maplist(writeln, Rows).
 
 /* check a list and verify that it has no repeated elements*/
 all_distinct2([]).
@@ -14,6 +19,7 @@ all_distinctHelper(X, [First|Rest]) :-
     X \= First,
     all_distinctHelper(X, Rest).
 
+/* solving logic */
 sudoku(Rows) :-
   append(Rows, Vs), Vs ins 1..9,
   maplist(all_distinct, Rows),
@@ -35,12 +41,21 @@ blocks([A,B,C|Bs1], [D,E,F|Bs2], [G,H,I|Bs3]) :-
   all_distinct([A,B,C,D,E,F,G,H,I]),
   blocks(Bs1, Bs2, Bs3).
 
-  problem(1, [[7,_,_,8,_,_,_,_,_],
-            [3,_,_,_,_,_,_,_,_],
-            [5,_,_,_,_,9,_,_,_],
-            [1,_,_,_,_,_,_,_,_],
-            [4,_,_,_,_,_,_,_,_],
-            [8,_,_,_,_,_,7,_,_],
-            [2,_,_,_,_,_,_,9,_],
-            [6,_,_,_,_,_,_,_,_],
-            [9,_,_,_,_,_,_,_,_]]).
+problem(2, [[_,_,_,_,_,_,_,_,_],
+            [_,_,_,_,_,3,_,8,5],
+            [_,_,1,_,2,_,_,_,_],
+            [_,_,_,5,_,7,_,_,_],
+            [_,_,4,_,_,_,1,_,_],
+            [_,9,_,_,_,_,_,_,_],
+            [5,_,_,_,_,_,_,7,3],
+            [_,_,2,_,1,_,_,_,_],
+            [_,_,_,_,4,_,_,_,9]]).
+problem(1, [[_,_,4,3,_,_,_,_,5],
+            [_,8,_,_,7,_,_,4,_],
+            [_,_,1,_,4,_,2,_,_],
+            [_,_,_,_,_,9,_,_,_],
+            [6,8,_,1,_,_,4,3,_],
+            [_,_,4,_,_,_,_,_,2],
+            [_,_,3,_,2,_,5,_,8],
+            [_,2,_,_,8,_,_,7,_],
+            [8,_,_,_,_,3,6,_,_]]).
