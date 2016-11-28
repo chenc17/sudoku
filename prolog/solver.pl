@@ -1,25 +1,18 @@
-/*http://www.swi-prolog.org/pldoc/man?predicate=transpose/2*/
 :- use_module(library(clpfd)).
 :- consult(sudokuIO).
 
-/* main program */
+/* SOLVER: pass a file that contains a puzzle,
+   if the puzzle is solvable, write the solution a new file. */
 solve(FileName) :-
-  fileToPuzzle(FileName, Rows),
+  read_Puzzle_From_File(FileName, Rows),
   sudoku(Rows),
+  sub_atom(FileName, _, _, 4, FileNameMinusExtension),
+  atom_concat(FileNameMinusExtension, '_solution.txt', X),
+  write_Puzzle_to_File(Rows, X),
   maplist(writeln, Rows).
 
-/* check a list and verify that it has no repeated elements*/
-all_distinct2([]).
-all_distinct2([First|Rest]) :-
-   all_distinctHelper(First, Rest),
-   allDistinct2(Rest).
-
-all_distinctHelper(_, []).
-all_distinctHelper(X, [First|Rest]) :-
-    X \= First,
-    all_distinctHelper(X, Rest).
-
 /* solving logic */
+/*http://www.swi-prolog.org/pldoc/man?predicate=transpose/2*/
 sudoku(Rows) :-
   append(Rows, Vs), Vs ins 1..9,
   maplist(all_distinct, Rows),
@@ -29,33 +22,8 @@ sudoku(Rows) :-
   blocks(A, B, C), blocks(D, E, F), blocks(G, H, I),
   maplist(label, Rows).
 
-/* set's the Ith element of a list to Value and
-stores the output in the last parameter */
-setElement([_|Rest], 0, Value, [Value|Rest]).
-setElement([First|Rest], I, Value, [First|End]):-
-  I > 0, Next is I-1,
-  setElement(Rest, Next, Value, End).
-
 blocks([], [], []).
 blocks([A,B,C|Bs1], [D,E,F|Bs2], [G,H,I|Bs3]) :-
   all_distinct([A,B,C,D,E,F,G,H,I]),
   blocks(Bs1, Bs2, Bs3).
-
-problem(2, [[_,_,_,_,_,_,_,_,_],
-            [_,_,_,_,_,3,_,8,5],
-            [_,_,1,_,2,_,_,_,_],
-            [_,_,_,5,_,7,_,_,_],
-            [_,_,4,_,_,_,1,_,_],
-            [_,9,_,_,_,_,_,_,_],
-            [5,_,_,_,_,_,_,7,3],
-            [_,_,2,_,1,_,_,_,_],
-            [_,_,_,_,4,_,_,_,9]]).
-problem(1, [[_,_,4,3,_,_,_,_,5],
-            [_,8,_,_,7,_,_,4,_],
-            [_,_,1,_,4,_,2,_,_],
-            [_,_,_,_,_,9,_,_,_],
-            [6,8,_,1,_,_,4,3,_],
-            [_,_,4,_,_,_,_,_,2],
-            [_,_,3,_,2,_,5,_,8],
-            [_,2,_,_,8,_,_,7,_],
-            [8,_,_,_,_,3,6,_,_]]).
+/* end code that was found from swi-prolog.org */

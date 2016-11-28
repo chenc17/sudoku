@@ -22,11 +22,43 @@ line([L|Ls]) --> [L], line(Ls).
 
 /* read from FileName, and convert the puzzle there
    to a list of lists that resembles a sudoku grid. */
-fileToPuzzle(FileName, Result) :-
+read_Puzzle_From_File(FileName, Result) :-
   phrase_from_file(lines(Ls), FileName),
   linesToSudokuRows(Ls, 0, [], Rows),
   puzzle(1, BlankRows),
   createPuzzle(Rows, BlankRows, [], Result).
+
+write_Puzzle_to_File(Puzzle, FileName) :-
+  open(FileName, write, F),
+  writePuzzle(F, 0, Puzzle),
+  close(F).
+
+writePuzzle(_, _, []).
+writePuzzle(F, Iteration, [H|T]) :-
+  Next_Itr is Iteration + 1,
+  (mod(Iteration, 3) =:= 0 ->
+    writeDivider(F) ; true),
+  writeLineToFile(F, 0, H), write(F, '\n'),
+  (Next_Itr = 9 -> writeDivider(F) ; true),
+  writePuzzle(F, Next_Itr, T).
+
+writeLineToFile(_, _, []).
+writeLineToFile(F, Idx, [H|T]) :-
+  (mod(Idx,3) =:= 0 ->
+    write(F, '| ') ; true),
+  (isAnUnknown(H) ->
+  write(F, -) ;  write(F, H)),
+  write(F, ' '),
+  Next is Idx + 1,
+  (Next = 9 -> write(F, '|') ; true),
+  writeLineToFile(F, Next, T).
+
+/* hacky way to see if X is not a known sudoku value */
+isAnUnknown(X) :-
+  X = -99999.
+
+writeDivider(F) :-
+  write(F, "+=======================+\n").
 
 /* usage:
     createPuzzle(RowsFromFileToPuzzle, blank puzzle, [], X). */
