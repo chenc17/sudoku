@@ -33,6 +33,7 @@ solve(FileName).
 #### Usage:
 ```
 generator(N).
+
 ```
 
 **Parameters:**

@@ -6,6 +6,7 @@
 
 # ignore subdirectories where we are saving puzzles
 *puzzles*/
+*solutions*/
 .DS_Store
 
 # ignore intelli-j created files.
@@ -14,3 +15,6 @@
 
 # ignore visual studios stuffs
 *.sdf
+
+# ignore all text files
+/*/*.txt
