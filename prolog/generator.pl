@@ -2,6 +2,7 @@
 
 /*import in the solver.pl file and some libraries*/
 :- consult('solver.pl').
+:- consult('sudokuIO.pl').
 :- use_module(library(clpfd)).
 :- use_module(library(random)).
 
@@ -18,7 +19,8 @@ problem(2, [[_,_,_,_,_,_,_,_,_],
 
 
 /*generator*/
-generator :-
+generator(0).
+generator(N) :-
 
   /*get empty Sudoku grid*/
   problem(2,Rows),
@@ -64,7 +66,7 @@ generator :-
 
   /*list of lists to single list of values*/
   flatten(Sudoku_Grid,All_Vals),
-  %write(All_Vals),
+  %write(All_Vals), nl,
 
   /*get a list containing 50 random values between 1 and 81...these
   values correspond with the indices of the values in All_Vals that will
@@ -74,18 +76,44 @@ generator :-
 
   /*now actually replace values in All_Vals accordingly*/
   create_unsolved(All_Vals, Replace_Indices, Result),
-  %write(Result),
+  %write('Indices'), nl,
+  %write(Replace_Indices), nl,
 
   /*change the list back to a list of lists*/
   lst_2_lst_of_lst(Result, 9, List_Of_Lists),
-  maplist(writeln, List_Of_Lists), nl,
+  %write('1st'), nl,
+  %maplist(writeln, List_Of_Lists), nl,
 
-  /*check whether or not the puzzle is solveable*/
+  /*check whether or not the puzzle is solvable*/
   (sudoku(List_Of_Lists) ->
-  maplist(writeln, List_Of_Lists), nl
+
+  get_time(Curr_time),
+  /*create solved puzzle file*/
+  atom_concat('puzzle', Curr_time, Y),
+  atom_concat(Y, '_solution.txt', SP_file_name),
+  write_Puzzle_to_File(List_Of_Lists, SP_file_name),
+
+  /*create the unsolved puzzle file name using the current time*/
+  flatten(List_Of_Lists, Flat),
+  create_unsolved(Flat, Replace_Indices, Unsolved_F),
+  lst_2_lst_of_lst(Unsolved_F, 9, Unsolved),
+  %write('Unsolved'), nl,
+  %maplist(writeln, Unsolved), nl,
+
+  atom_concat('puzzle', Curr_time, X),
+  atom_concat(X, '.txt', UP_file_name),
+  write_Puzzle_to_File(Unsolved, UP_file_name),
+  NumLeft is N -1,
+  write("Generated, "),
+  write(UP_file_name), nl,
+  generator(NumLeft)
   ;
-  write("Calling generator again!"), nl,
-  generator).
+  write("Wasn't able to generate this one, calling generator again!"), nl,
+  generator(N)).
+
+
+  /*sudoku(List_Of_Lists),
+  maplist(writeln, List_Of_Lists), nl.*/
 
 /*takes a list of sudoku values and replaces all values specified by middle list
 with the anonymous variable*/
