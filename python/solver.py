@@ -33,18 +33,20 @@ def createSolved(puzzle, sq_num):
 
     if(puzzle[row][col] != UNKNOWN):
         createSolved(puzzle, sq_num + 1)
+    else:
+        possibleValues = getPossibleValues()
 
-    possibleValues = getPossibleValues()
+        for val in possibleValues:
+            if(isValid(puzzle, row, col, val)):
+                puzzle[row][col] = val
+                result = createSolved(puzzle, sq_num + 1)
+                if(result is not None):
+                    return puzzle
+                puzzle[row][col] = UNKNOWN
 
-    for val in possibleValues:
-        if(isValid(puzzle, row, col, val)):
-            puzzle[row][col] = val
-            result = createSolved(puzzle, sq_num + 1)
-            if(result is not None):
-                return puzzle
-        puzzle[row][col] = UNKNOWN
 
     # No possible values work, so backtrack
+    puzzle[row][col] = UNKNOWN
     return None
 
 def printPuzzle(puzzle):
