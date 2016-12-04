@@ -109,5 +109,7 @@ def getPossibleValues():
     return poss_values
 
 def basicTest():
+    print("Blank Puzzle:")
     printPuzzle(createSolved(BlankPuzzle, 0))
+    print("\nTest Puzzle:")
     printPuzzle(createSolved(TestPuzzle, 0))
