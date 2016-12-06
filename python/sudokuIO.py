@@ -24,11 +24,11 @@ def writeSudokuToFile(puzzle, fileName):
 # takes a file name: 'example.txt' removes the file extension,
 # and adds '_solution.txt' to the end.
 # result: 'example_solution.txt'
-def getNewFileName(fileName):
+def getSolutionFileName(fileName):
     lastDot = fileName.rfind(".")
     newFileName = fileName[:lastDot] + "_solution.txt"
     return newFileName
-    
+
 
 def sudokuRowToLine(row):
     result = ""
@@ -39,7 +39,7 @@ def sudokuRowToLine(row):
             result += "- "
         else:
             result += str(row[i]) + " "
-    
+
     result += "|\n"
     return result
 
@@ -47,7 +47,7 @@ def lineToSudokuRow(line):
     line = re.sub('[\s|]', '', line)
     return list(map(sudokuConverter, list(line)))
 
-    
+
 def sudokuConverter(c):
     if(c == '-'):
         return 0

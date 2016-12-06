@@ -30,14 +30,14 @@ def solvePuzzle(fileName):
     print("Attempting to solve...")
 
     result = createSolved(puzzle, 0)
-    
+
     if result is not None:
         print("Solution found!")
         printPuzzle(result)
     else:
         print("Could not solve puzzle :(")
 
-    newFileName = sudokuIO.getNewFileName(fileName)
+    newFileName = sudokuIO.getSolutionFileName(fileName)
     sudokuIO.writeSudokuToFile(result,newFileName)
     print("Wrote solution to new file: " + newFileName)
 
