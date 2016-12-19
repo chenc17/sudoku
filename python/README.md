@@ -16,7 +16,7 @@ Alternatively, open sudoku.py in IDLE, and run file.
 
 #### Usage:
 ```
-Commandline: python -c 'import sudoku; sudoku.solve(FileName")'
+Commandline: python -c 'import sudoku; sudoku.solve(FileName)'
 Running file from IDLE: solve(FileName) 
 e.g. solve("puzzles/puzzle6430.txt")
 ```
@@ -27,7 +27,7 @@ e.g. solve("puzzles/puzzle6430.txt")
 
 **Output:**
 
-- On the screen: If the puzzle is solvable, a solution will be displayed. Otherwise, FILL_IN will be displayed.
+- On the screen: If the puzzle is solvable, a solution will be displayed. 
 - In the folder: If the puzzle is solvable, a solved puzzle will be written to a new file. If ```puzzle.txt``` is provided, the solution will be found at ```puzzle_solution.txt```.
 
 ## Generating Puzzles:

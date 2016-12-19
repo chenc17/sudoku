@@ -1,7 +1,7 @@
 ## Synopsis
 
 This project implements Sudoku in several different programming languages <br />
-(currently Java, C++, and Lisp). <br/>
+(currently Java, C++, Lisp, Prolog, and Python). <br/>
 Each implementation of Sudoku can: <br />
 1.  Generate Sudoku puzzles: each puzzle will be written to its own text file… <br />
     a corresponding solution will also be written to its own text file <br />
